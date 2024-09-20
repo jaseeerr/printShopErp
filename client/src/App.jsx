@@ -1,24 +1,24 @@
 import React, { useState,useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Invoice from './components/Invoices';
 import Navbar from './components/Header'
+import Home from './components/Home';
 
 function App() {
     const [data, setData] = useState([]);
 
-    useEffect(() => {
+    // useEffect(() => {
       
-        if (location.pathname !== '/newInvoice') {
-          location.href = '/newInvoice'
-        }
-      }, []);
+    //     if (location.pathname !== '/newInvoice') {
+    //       location.href = '/newInvoice'
+    //     }
+    //   }, []);
     return (
         <Router>
        <div className="App"> 
                 <Navbar />
                 <Routes>
                  
-                    <Route path="/newInvoice" element={<Invoice />} />
+                    <Route path="/" element={<Home />} />
                     
                 </Routes>
             </div>
