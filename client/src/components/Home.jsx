@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import html2canvas from 'html2canvas';
-
+import logo from '../assets/notebooklogo1.png'
 const Home = () => {
   const [printType, setPrintType] = useState('');
   const [colorType, setColorType] = useState('');
@@ -242,8 +242,11 @@ const Home = () => {
       </div>
 
       {/* Items Table */}
-      <div className="w-3/4 p-6 bg-white rounded-lg shadow-md mb-8" ref={tableRef}>
-        <h2 className="text-xl font-bold mb-4">Added Items</h2>
+      <div className="w-3/4 p-6 bg-white rounded-lg shadow-md mb-8" ref={tableRef} style={{"backgroundColor":"white"}}>
+        
+        {/* <img src={logo} className='mx-auto w-30' alt="" /> */}
+        <h1 className="text-xl font-bold mb-4 text-center">NOTEBOOK ADVERTISING LLC</h1>
+        <h3 className="text-xl font-bold mb-4 text-center">PRICE LIST</h3>
         {items.length > 0 ? (
           <table className="min-w-full bg-white border border-gray-300">
             <thead>
