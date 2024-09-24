@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import html2canvas from 'html2canvas';
+import logo from '../assets/notebooklogo.png'
 
 const Home = () => {
   const [selectedItem, setSelectedItem] = useState('');
@@ -9,7 +10,9 @@ const Home = () => {
   const [logs, setLogs] = useState([]);
   const [minPerPiece, setMinPerPiece] = useState(0);
   const [maxPerPiece, setMaxPerPiece] = useState(0);
+  const [minQty,setMinQty] = useState(0)
   const [items, setItems] = useState([]); // State to store added items
+
 
   const logsEndRef = useRef(null); // Ref for auto-scrolling
   const tableRef = useRef(null); // Ref for the table to be captured as image
@@ -32,7 +35,7 @@ const Home = () => {
       { mq:1000,minQty: 1, maxQty: Infinity, priceRange: [0.09, 0.12] },
     ],
     'UV B.Card, 350gsm, both side lamination': [
-      { mq:1000,minQty: 1000, maxQty: Infinity, priceRange: [0.37, 0.39] },
+      { mq:1000,minQty: 1, maxQty: Infinity, priceRange: [0.37, 0.39] },
     ],
     'Frosty B.Card (2 colors, 300 gsm)':[
       {mq:200,minQty:1, maxQty: 499, priceRange:[0.95,1]},
@@ -63,7 +66,7 @@ const Home = () => {
       {mq:500,minQty:1000, maxQty: Infinity, priceRange:[0.475,0.475]},
     ],
     'Both side hard lamination card pouch type':[
-      {mq:250,minQty:1, maxQty: Infinity, priceRange:[2.5,2.5]},
+      {mq:100,minQty:1, maxQty: Infinity, priceRange:[2.5,2.5]},
     ],
     'Spot UV special card, 350gsm, Digital Printing, Urgent, 2 days':[
       {mq:100,minQty:1, maxQty: 199, priceRange:[2.5,2.5]},
@@ -98,6 +101,8 @@ const Home = () => {
   const calculatePriceRange = (qty) => {
     if (selectedItem && qty > 0) {
       const itemPriceData = priceData[selectedItem];
+      
+      setMinQty(itemPriceData[0].mq)
       const range = itemPriceData.find(
         (range) => qty >= range.minQty && qty <= range.maxQty
       );
@@ -154,7 +159,7 @@ const Home = () => {
   };
 
   const resetValues = () => {
-    setQuantity(100);
+    setQuantity(0);
     setPricePerPiece(0);
     setTotalPrice(0);
     resetPriceRange();
@@ -170,6 +175,20 @@ const Home = () => {
       calculateTotalPrice(pricePerPiece);
     }
   }, [pricePerPiece, quantity]);
+
+  useEffect(()=>{
+    if(selectedItem)
+    {
+      const itemPriceData = priceData[selectedItem];
+      setMinQty(itemPriceData[0].mq)
+    }
+    else
+    {
+      setMinQty(0)
+    }
+
+
+  },[selectedItem])
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
@@ -224,20 +243,20 @@ const Home = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Quantity</label>
+            <label className="block text-sm font-medium text-gray-700">Quantity | Minimum Quantity : {minQty}</label>
             <input
               type="number"
               className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               value={quantity}
               required
               onChange={handleQuantityChange}
-              min="1"
+              min={minQty}
             />
           </div>
 
           <div className="mb-4">
-  <label className="block text-sm font-medium text-gray-700">
-    Price per Piece | {`AED ${minPerPiece} - AED ${maxPerPiece}`}
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Price Per Piece | {`AED ${minPerPiece} - AED ${maxPerPiece}`}
   </label>
   <span className="flex">
     <input
@@ -264,9 +283,9 @@ const Home = () => {
           setPricePerPiece(newValue);
         }
       }}
-      className="bg-blue-500 rounded-md px-5 text-white ml-4"
+      className="bg-blue-500 rounded-md px-3 font-extrabold text-lg text-white ml-4"
     >
-      -
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="rgba(255,255,255,1)"><path d="M5 11V13H19V11H5Z"></path></svg>
     </button>
     <button
     type='button'
@@ -276,9 +295,9 @@ const Home = () => {
           setPricePerPiece(newValue);
         }
       }}
-      className="bg-blue-500 rounded-md px-5 text-white ml-4"
+      className="bg-blue-500 rounded-md px-3 font-extrabold text-lg text-white ml-4"
     >
-      +
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="rgba(255,255,255,1)"><path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path></svg>
     </button>
   </span>
 </div>
@@ -298,8 +317,9 @@ const Home = () => {
 
       {/* Items Table */}
       <div className="w-3/4 p-6 bg-white rounded-lg shadow-md mb-8" ref={tableRef}>
-        <h1 className="text-xl font-bold mb-4 text-center">NOTEBOOK ADVERTISING LLC</h1>
-        <h3 className="text-xl font-bold mb-4 text-center">PRICE LIST</h3>
+        {/* <h1 className="text-xl font-bold mb-4 text-center">NOTEBOOK ADVERTISING LLC</h1> */}
+        <img src={logo} className='mx-auto w-48'  alt="" />
+        <h3 className="text-xl font-bold mb-4 text-center mt-3">PRICE LIST</h3>
         {items.length > 0 ? (
           <table className="min-w-full bg-white border border-gray-300">
             <thead>
@@ -329,7 +349,7 @@ const Home = () => {
         onClick={handleDownloadImage}
         className="mb-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
       >
-        Download Table as Image
+        Download Price List
       </button>
     </div>
   );
