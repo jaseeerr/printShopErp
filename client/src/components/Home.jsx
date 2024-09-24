@@ -193,7 +193,7 @@ const Home = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
       {/* Logs Box */}
-      <div className="w-full max-w-lg p-6 bg-gray-900 text-white rounded-lg shadow-md mb-6">
+      {/* <div className="w-full max-w-lg p-6 bg-gray-900 text-white rounded-lg shadow-md mb-6">
         <h2 className="text-xl font-bold mb-4">Logs</h2>
         <div className="overflow-y-auto h-64">
           {logs.length > 0 ? (
@@ -207,7 +207,7 @@ const Home = () => {
             <p className="text-gray-400">No logs to display</p>
           )}
         </div>
-      </div>
+      </div> */}
 
       <div className="w-full max-w-lg p-6 bg-white rounded-lg shadow-md mb-6">
         <h2 className="text-xl font-bold mb-4">Price Calculator</h2>
