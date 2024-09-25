@@ -5,9 +5,15 @@ import logo from '../assets/notebooklogo.png'
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
 
+    const [isDropdownOpen,setIsDropdownOpen] = useState(false)
+
     const handleToggle = () => {
         setIsOpen(!isOpen);
     };
+
+    const handleDropdownToggle = ()=>{
+        setIsDropdownOpen(!isDropdownOpen)
+    }
 
     return (
         <nav className="bg-white shadow-xl border-gray-200 ">
@@ -34,18 +40,39 @@ const Navbar = () => {
                 </div>
                 <div className={`items-center justify-between ${isOpen ? 'block' : 'hidden'} w-full md:flex md:w-auto md:order-1`} id="navbar-cta">
                     <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white ">
-                        {/* <li>
-                            <Link to="/" className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700" >Home</Link>
-                        </li> */}
+                       
                         <li>
-                            {/* <Link to="/" className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700  dark:border-gray-700">Home</Link> */}
+                            <Link to="/" className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700  ">Home</Link>
                         </li>
+                        <li className="relative">
+              <button
+                onClick={handleDropdownToggle}
+                className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 "
+              >
+                Add New Product
+              </button>
+              {isDropdownOpen && (
+                <div className="absolute left-0 mt-2 w-48 z-30 bg-white rounded-md shadow-lg ">
+                  <a
+                    href="/businessCardPriceData"
+                    className="block px-4 py-2 text-gray-800  hover:bg-gray-100 "
+                  >
+                    Business Card
+                  </a>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-gray-800  hover:bg-gray-100 "
+                  >
+                    Stickers
+                  </a>
+                 
+                </div>
+              )}
+            </li>
                         {/* <li>
-                            <Link to="/dma" className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Dma</Link>
+                            <Link to="/businessCardPriceData" className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700">Add Item</Link>
                         </li> */}
-                        {/* <li>
-                            <Link to="#" className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Contact</Link>
-                        </li> */}
+                        
                     </ul>
                 </div>
             </div>

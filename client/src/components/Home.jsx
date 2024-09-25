@@ -210,7 +210,7 @@ const Home = () => {
       </div> */}
 
       <div className="w-full max-w-lg p-6 bg-white rounded-lg shadow-md mb-6">
-        <h2 className="text-xl font-bold mb-4">Price Calculator</h2>
+        <h2 className="text-xl font-bold mb-4">Business Card Price Calculator</h2>
         <form onSubmit={handleAddItem}>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Select Item</label>
