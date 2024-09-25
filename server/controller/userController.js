@@ -19,18 +19,14 @@ module.exports = {
     },
     editBusinessCardRates:async(req,res)=>{
       try {
-       console.log(req.body.data)
-      //  const newData = {
-      //   item:req.body.data[0].item,
-      //   data:req.body.data
-      // }
-      // const x = await BusinessCard.findByIdAndUpdate(req.params.id,newData)
-      //  const data = new BusinessCard({
-      //   item:req.body.data[0].item,
-      //   data:req.body.data
-      // })
-      //  await data.save()
-      //  res.json({success:true})
+       console.log(req.body)
+       const newData = {
+        item:req.body.newItemData.data[0].item,
+        data:req.body.newItemData.data
+      }
+      const x = await BusinessCard.findByIdAndUpdate(req.body.itemId,newData)
+  
+       res.json({success:true})
       } catch (error) {
         console.error('Error adding price data:', error);
         res.status(500).json({ error: 'Server error, unable to add price data.' });

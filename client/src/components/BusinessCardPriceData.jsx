@@ -42,6 +42,7 @@ const BusinessCardPriceData = () => {
     if (selectedData) {
       setUpdate(true)
       console.log('si ',selectedData)
+      setItemId(selectedData._id)
       // Populate form fields with selected item data
       setItemName(selectedData.item);
       setMq(selectedData.data[0].mq); // Assuming all mq are the same for all ranges
@@ -98,7 +99,7 @@ const BusinessCardPriceData = () => {
     if(update)
     {
       try {
-      const res = await axios.post(`${SERVER_URL}/editBusinessCardItem/${itemId}`, {newItemData,itemId});
+      const res = await axios.post(`${SERVER_URL}/editBusinessCardItem`, {newItemData,itemId});
       console.log(res.data);
       alert('Price data Edited successfully!');
     } catch (error) {
@@ -143,7 +144,22 @@ const BusinessCardPriceData = () => {
         </div>
 
         {/* Form for Updating or Adding New Price Data */}
+
+{selectedItem &&
+  <span className='flex justify-center'>
+<button
+              type="button"
+              className="mt-2 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+              onClick={handleAddRange}
+            >
+              Delete Selected Item
+            </button>
+</span>
+}
+
+  
         <h2 className="text-2xl font-bold mb-6 text-center">Business Card Price Data</h2>
+
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>

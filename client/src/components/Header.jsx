@@ -6,6 +6,8 @@ const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
 
     const [isDropdownOpen,setIsDropdownOpen] = useState(false)
+    const [isDropdownOpen1,setIsDropdownOpen1] = useState(false)
+
 
     const handleToggle = () => {
         setIsOpen(!isOpen);
@@ -14,6 +16,10 @@ const Navbar = () => {
     const handleDropdownToggle = ()=>{
         setIsDropdownOpen(!isDropdownOpen)
     }
+
+    const handleDropdownToggle1 = ()=>{
+      setIsDropdownOpen1(!isDropdownOpen1)
+  }
 
     return (
         <nav className="bg-white shadow-xl border-gray-200 ">
@@ -46,10 +52,35 @@ const Navbar = () => {
                         </li>
                         <li className="relative">
               <button
+                onClick={handleDropdownToggle1}
+                className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 "
+              >
+                Price Calculator
+              </button>
+              {isDropdownOpen1 && (
+                <div className="absolute left-0 mt-2 w-48 z-30 bg-white rounded-md shadow-lg ">
+                  <a
+                    href="/"
+                    className="block px-4 py-2 text-gray-800  hover:bg-gray-100 "
+                  >
+                    Business Card
+                  </a>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-gray-800  hover:bg-gray-100 "
+                  >
+                    Stickers
+                  </a>
+                 
+                </div>
+              )}
+            </li>
+                        <li className="relative">
+              <button
                 onClick={handleDropdownToggle}
                 className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 "
               >
-                Add New Product
+                Add New Item
               </button>
               {isDropdownOpen && (
                 <div className="absolute left-0 mt-2 w-48 z-30 bg-white rounded-md shadow-lg ">

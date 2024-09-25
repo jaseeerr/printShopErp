@@ -12,7 +12,7 @@ router.post('/addBusinessCard', userController.addBusinessCardRates)
 
 router.get('/getBusinessCardItems', userController.getBusinessCardItems)
 
-router.post('/editBusinessCardItem/:id', userController.editBusinessCardRates)
+router.post('/editBusinessCardItem', userController.editBusinessCardRates)
 
 
 
