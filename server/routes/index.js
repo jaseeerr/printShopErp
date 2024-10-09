@@ -8,11 +8,11 @@ router.get('/', function(req, res, next) {
 });
 
 
-router.post('/addBusinessCard', userController.addBusinessCardRates)
+router.post('/addBusinessCardRates', userController.addBusinessCardRates)
+router.get('/getBusinessCardRates', userController.getBusinessCardRates)
 
-router.get('/getBusinessCardItems', userController.getBusinessCardItems)
 
-router.post('/editBusinessCardItem', userController.editBusinessCardRates)
+
 
 
 

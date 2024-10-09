@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import PriceDisplay from '../../components/BusinessCardPriceTable';
-
+import axios from 'axios'
 const AddPriceRanges = () => {
   // State to store the price data
   const [priceData, setPriceData] = useState({
@@ -10,6 +10,8 @@ const AddPriceRanges = () => {
     color: {},
     printType: {},
   });
+
+  
 
   // State to handle dynamic input for each criterion
   const [newEntry, setNewEntry] = useState({
@@ -70,7 +72,38 @@ const AddPriceRanges = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Final priceData:', priceData);
+    const handleSubmit = async () => {
+      try {
+        const response = await axios.post('http://localhost:3000/addBusinessCardRates', {
+         
+          data: priceData
+        });
+        console.log('Price data submitted successfully:', response.data);
+      } catch (error) {
+        console.error('Error submitting price data:', error);
+      }
+    };
+    handleSubmit()
+
   };
+
+
+    // Fetch price data when the component mounts
+    useEffect(() => {
+      const fetchPriceData = async () => {
+        try {
+          const response = await axios.get('http://localhost:3000/getBusinessCardRates');
+          if (response.data.success) {
+            // Assuming the data returned from the server is in the required format
+            setPriceData(response.data.data[0].data);  // For simplicity, assuming the first document contains the required data
+          }
+        } catch (error) {
+          console.error('Error fetching price data:', error);
+        }
+      };
+  
+      fetchPriceData();
+    }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">

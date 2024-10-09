@@ -37,7 +37,7 @@ const PriceDisplay = ({priceData}) => {
                                 <ul className="list-decimal ml-6">
                                     {Object.entries(ranges).map(([range, prices]) => (
                                         <li key={range}>
-                                            {range}: ${prices.join(' / $')}
+                                            {range}: AED {prices.join(' / AED ')}
                                         </li>
                                     ))}
                                 </ul>

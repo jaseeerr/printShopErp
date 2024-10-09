@@ -1,8 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Header'
-import Home from './components/Home';
-import BusinessCardPriceData from './components/BusinessCardPriceData';
 import GiftSetCalculator from './pages/businessCard/BusinessCardCalulator';
 import BusinessCardCalculator from './pages/businessCard/BusinessCardCalulator';
 import BusinessCardPriceForm from './pages/businessCard/PriceForm';

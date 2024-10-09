@@ -5,42 +5,42 @@ module.exports = {
 
     addBusinessCardRates:async(req,res)=>{
       try {
-       console.log(req.body.data)
-       const data = new BusinessCard({
-        item:req.body.data[0].item,
-        data:req.body.data
-      })
-       await data.save()
-        res.json({success:true})
+        const { name, data } = req.body; // Extract name and data from the request body
+    
+        // Create a new instance of the PriceData model
+        const newPriceData = new BusinessCard({
+         
+          data: data
+        });
+    
+        // Save the priceData to the database
+        const savedPriceData = await newPriceData.save();
+    
+        // Send success response
+        res.status(201).json({
+          success: true,
+          message: 'Price data saved successfully',
+          data: savedPriceData
+        });
       } catch (error) {
-        console.error('Error adding price data:', error);
-        res.status(500).json({ success:false,error: 'Server error, unable to add price data.' });
+        // Send error response in case of failure
+        console.error('Error saving price data:', error);
+        res.status(500).json({
+          success: false,
+          message: 'Failed to save price data',
+          error: error.message
+        });
       }
     },
-    editBusinessCardRates:async(req,res)=>{
+    getBusinessCardRates:async(req,res)=>{
       try {
-       console.log(req.body)
-       const newData = {
-        item:req.body.newItemData.data[0].item,
-        data:req.body.newItemData.data
-      }
-      const x = await BusinessCard.findByIdAndUpdate(req.body.itemId,newData)
-  
-       res.json({success:true})
+        // Fetch all price data from MongoDB
+        const priceData = await BusinessCard.find({});
+        res.status(200).json({ success: true, data: priceData });
       } catch (error) {
-        console.error('Error adding price data:', error);
-        res.status(500).json({ error: 'Server error, unable to add price data.' });
-      }
-    },
-    getBusinessCardItems:async(req,res)=>{
-      try {
-        const items = await BusinessCard.find().select('item');
-        const data = await BusinessCard.find()
-        console.log(data)
-        res.json({success:true,items,data})
-      } catch (error) {
-        console.log(error)
-        res.json({success:false})
+        console.error('Error fetching price data:', error);
+        res.status(500).json({ success: false, message: 'Error fetching price data' });
       }
     }
+    
 }
