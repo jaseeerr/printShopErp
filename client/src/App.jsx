@@ -3,6 +3,10 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Header'
 import Home from './components/Home';
 import BusinessCardPriceData from './components/BusinessCardPriceData';
+import GiftSetCalculator from './pages/businessCard/BusinessCardCalulator';
+import BusinessCardCalculator from './pages/businessCard/BusinessCardCalulator';
+import BusinessCardPriceForm from './pages/businessCard/PriceForm';
+import AddPriceRanges from './pages/businessCard/PriceForm';
 
 function App() {
     const [data, setData] = useState([]);
@@ -19,8 +23,10 @@ function App() {
                 <Navbar />
                 <Routes>
                  
-                    <Route path="/" element={<Home />} />
-                    <Route path="/businessCardPriceData" element={<BusinessCardPriceData  />} />
+                    <Route path="/" element={<BusinessCardCalculator />} />
+                    <Route path="/businesscard" element={<BusinessCardCalculator />} />
+                    <Route path="/businesscardForm" element={<AddPriceRanges />} />
+                    {/* <Route path="/businessCardPriceData" element={<BusinessCardPriceData  />} /> */}
                     
                 </Routes>
             </div>
