@@ -10,6 +10,8 @@ router.get('/', function(req, res, next) {
 
 router.post('/addBusinessCardRates', userController.addBusinessCardRates)
 router.get('/getBusinessCardRates', userController.getBusinessCardRates)
+router.post('/updateBusinessCardRates', userController.updateBusinessCardRates)
+
 
 
 

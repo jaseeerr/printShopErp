@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-
+import React, { useState,useEffect } from 'react';
+import axios from 'axios';
 const BusinessCardCalculator = () => {
   // Updated price data with ranges for different options and quantities
-  const priceData = {
+  const [priceData,setPriceData] = useState({
     gsm: {
       '300': { '1-199': [0.3, 0.5], '200-499': [0.28, 0.45], '500-999': [0.25, 0.40], '1000+': [0.20, 0.35] },
       '350': { '1-199': [0.35, 0.55], '200-499': [0.32, 0.48], '500-999': [0.30, 0.42], '1000+': [0.25, 0.38] },
@@ -33,7 +33,7 @@ const BusinessCardCalculator = () => {
       'uv': { '1-199': [0.15, 0.22], '200-499': [0.12, 0.18], '500-999': [0.10, 0.15], '1000+': [0.08, 0.12] },
       'fully-custom': { '1-199': [0.20, 0.30], '200-499': [0.18, 0.25], '500-999': [0.16, 0.22], '1000+': [0.14, 0.20] },
     },
-  };
+  }) 
 
   const [selectedGsm, setSelectedGsm] = useState('');
   const [selectedLamination, setSelectedLamination] = useState('');
@@ -86,126 +86,147 @@ const BusinessCardCalculator = () => {
     setTotalMaxPrice((pricePerCardMax * quantity).toFixed(2));
   };
 
+  // Fetch price data when the component mounts
+  useEffect(() => {
+    const fetchPriceData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/getBusinessCardRates');
+        if (response.data.success) {
+          // Assuming the data returned from the server is in the required format
+          setPriceData(response.data.data[0].data);  // For simplicity, assuming the first document contains the required data
+        }
+      } catch (error) {
+        console.error('Error fetching price data:', error);
+      }
+    };
+
+    fetchPriceData();
+  }, []);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <div className="w-full max-w-lg p-6 bg-white rounded-lg shadow-md mb-6">
-        <h2 className="text-xl font-bold mb-4">Business Card Price Calculator</h2>
+    <div className="w-full max-w-lg p-6 bg-white rounded-lg shadow-md mb-6">
+      <h2 className="text-xl font-bold mb-4">Business Card Price Calculator</h2>
 
-        {/* GSM Selection */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Select GSM</label>
-          <select
-            className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none"
-            value={selectedGsm}
-            onChange={(e) => setSelectedGsm(e.target.value)}
-            required
-          >
-            <option value="">Select GSM</option>
-            <option value="300">300 GSM</option>
-            <option value="350">350 GSM</option>
-            <option value="400">400 GSM</option>
-            <option value="500">500 GSM</option>
-            <option value="760">760 GSM</option>
-          </select>
-        </div>
-
-        {/* Lamination Selection */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Select Lamination</label>
-          <select
-            className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none"
-            value={selectedLamination}
-            onChange={(e) => setSelectedLamination(e.target.value)}
-            required
-          >
-            <option value="">Select Lamination</option>
-            <option value="glossy">Glossy</option>
-            <option value="matte">Matte</option>
-            <option value="velvet">Velvet</option>
-            <option value="without-lamination">Without Lamination</option>
-          </select>
-        </div>
-
-        {/* Cutting Selection */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Select Cutting</label>
-          <select
-            className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none"
-            value={selectedCutting}
-            onChange={(e) => setSelectedCutting(e.target.value)}
-            required
-          >
-            <option value="">Select Cutting</option>
-            <option value="straight-cutting">Straight Cutting</option>
-            <option value="corner-cutting">Corner Cutting</option>
-            <option value="shape-cutting">Shape Cutting</option>
-          </select>
-        </div>
-
-        {/* Color Selection */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Select Color</label>
-          <select
-            className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none"
-            value={selectedColor}
-            onChange={(e) => setSelectedColor(e.target.value)}
-            required
-          >
-            <option value="">Select Color</option>
-            <option value="1">1 Color</option>
-            <option value="2">2 Colors</option>
-            <option value="3">3 Colors</option>
-            <option value="4">4 Colors</option>
-          </select>
-        </div>
-
-        {/* Print Type Selection */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Select Print Type</label>
-          <select
-            className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none"
-            value={selectedPrintType}
-            onChange={(e) => setSelectedPrintType(e.target.value)}
-            required
-          >
-            <option value="">Select Print Type</option>
-            <option value="offset">Offset</option>
-            <option value="digital">Digital</option>
-            <option value="screen">Screen</option>
-            <option value="uv">UV</option>
-            <option value="fully-custom">Fully Custom</option>
-          </select>
-        </div>
-
-        {/* Quantity Input */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Quantity</label>
-          <input
-            type="number"
-            className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none"
-            value={quantity}
-            onChange={(e) => setQuantity(parseInt(e.target.value, 10))}
-            required
-            min="1"
-          />
-        </div>
-
-        {/* Calculate Button */}
-        <button
-          onClick={calculatePrice}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+      {/* GSM Selection */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Select GSM</label>
+        <select
+          className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none"
+          value={selectedGsm}
+          onChange={(e) => setSelectedGsm(e.target.value)}
+          required
         >
-          Calculate Price
-        </button>
-
-        {/* Total Price Display */}
-        {totalMinPrice > 0 && (
-          <div className="mt-4">
-            <h3 className="text-lg font-semibold">Total Price: AED {totalMinPrice} - AED {totalMaxPrice}</h3>
-          </div>
-        )}
+          <option value="">Select GSM</option>
+          {Object.keys(priceData.gsm).map((gsm) => (
+            <option key={gsm} value={gsm}>
+              {gsm} GSM
+            </option>
+          ))}
+        </select>
       </div>
+
+      {/* Lamination Selection */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Select Lamination</label>
+        <select
+          className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none"
+          value={selectedLamination}
+          onChange={(e) => setSelectedLamination(e.target.value)}
+          required
+        >
+          <option value="">Select Lamination</option>
+          {Object.keys(priceData.lamination).map((lamination) => (
+            <option key={lamination} value={lamination}>
+              {lamination}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Cutting Selection */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Select Cutting</label>
+        <select
+          className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none"
+          value={selectedCutting}
+          onChange={(e) => setSelectedCutting(e.target.value)}
+          required
+        >
+          <option value="">Select Cutting</option>
+          {Object.keys(priceData.cutting).map((cutting) => (
+            <option key={cutting} value={cutting}>
+              {cutting}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Color Selection */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Select Color</label>
+        <select
+          className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none"
+          value={selectedColor}
+          onChange={(e) => setSelectedColor(e.target.value)}
+          required
+        >
+          <option value="">Select Color</option>
+          {Object.keys(priceData.color).map((color) => (
+            <option key={color} value={color}>
+              {color} Color
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Print Type Selection */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Select Print Type</label>
+        <select
+          className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none"
+          value={selectedPrintType}
+          onChange={(e) => setSelectedPrintType(e.target.value)}
+          required
+        >
+          <option value="">Select Print Type</option>
+          {Object.keys(priceData.printType).map((printType) => (
+            <option key={printType} value={printType}>
+              {printType}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Quantity Input */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Quantity</label>
+        <input
+          type="number"
+          className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none"
+          value={quantity}
+          onChange={(e) => setQuantity(parseInt(e.target.value, 10))}
+          required
+          min="1"
+        />
+      </div>
+
+      {/* Calculate Button */}
+      <button
+        onClick={calculatePrice}
+        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+      >
+        Calculate Price
+      </button>
+
+      {/* Total Price Display */}
+      {totalMinPrice > 0 && (
+        <div className="mt-4">
+          <h3 className="text-lg font-semibold">Total Price: AED {totalMinPrice} - AED {totalMaxPrice}</h3>
+        </div>
+      )}
     </div>
+  </div>
   );
 };
 

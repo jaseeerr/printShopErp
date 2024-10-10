@@ -41,6 +41,29 @@ module.exports = {
         console.error('Error fetching price data:', error);
         res.status(500).json({ success: false, message: 'Error fetching price data' });
       }
+    },
+    updateBusinessCardRates:async(req,res)=>{
+      try {
+        const { id, data } = req.body; // Extract name and data from the request body
+    
+        
+        const update = await BusinessCard.findByIdAndUpdate(id,{$set:{data:data}})
+    
+        // Send success response
+        res.status(201).json({
+          success: true,
+          message: 'Price data updated successfully',
+          data: savedPriceData
+        });
+      } catch (error) {
+        // Send error response in case of failure
+        console.error('Error saving price data:', error);
+        res.status(500).json({
+          success: false,
+          message: 'Failed to save price data',
+          error: error.message
+        });
+      }
     }
     
 }

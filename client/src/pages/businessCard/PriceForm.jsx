@@ -1,7 +1,10 @@
 import React, { useState,useEffect } from 'react';
 import PriceDisplay from '../../components/BusinessCardPriceTable';
 import axios from 'axios'
+import toast from 'react-hot-toast'
+import MyAxiosInstance from '../../../utils/axios';
 const AddPriceRanges = () => {
+  const axiosInstance = MyAxiosInstance()
   // State to store the price data
   const [priceData, setPriceData] = useState({
     gsm: {},
@@ -10,6 +13,8 @@ const AddPriceRanges = () => {
     color: {},
     printType: {},
   });
+  const [id,setId] = useState()
+  const [update,setUpdate] = useState(false)
 
   
 
@@ -60,6 +65,28 @@ const AddPriceRanges = () => {
       },
     });
 
+    const handleSubmit = async () => {
+      try {
+
+        if(update)
+        {
+          const response = await axiosInstance.post('/updateBusinessCardRates', {
+            data: priceData,
+            id
+          });
+          
+        }
+        const response = await axiosInstance.post('/addBusinessCardRates', {
+          data: priceData
+        });
+        console.log('Price data submitted successfully:', response.data);
+      } catch (error) {
+        console.error('Error submitting price data:', error);
+      }
+    };
+    handleSubmit()
+
+    
     // Reset new entry state
     // setNewEntry({
     //   criterion: 'gsm',
@@ -75,7 +102,6 @@ const AddPriceRanges = () => {
     const handleSubmit = async () => {
       try {
         const response = await axios.post('http://localhost:3000/addBusinessCardRates', {
-         
           data: priceData
         });
         console.log('Price data submitted successfully:', response.data);
@@ -95,6 +121,12 @@ const AddPriceRanges = () => {
           const response = await axios.get('http://localhost:3000/getBusinessCardRates');
           if (response.data.success) {
             // Assuming the data returned from the server is in the required format
+            if(response.data.data.length>0)
+            {
+              setUpdate(true)
+            }
+
+            setId(response.data.data[0]._id)
             setPriceData(response.data.data[0].data);  // For simplicity, assuming the first document contains the required data
           }
         } catch (error) {
