@@ -34,7 +34,7 @@ const PriceDisplay = ({priceData}) => {
                         Object.entries(options).map(([option, ranges]) => (
                             <li key={option} className="mt-2">
                                 <span className="font-semibold">{option}:</span>
-                                <ul className="list-decimal ml-6">
+                                <ul className="list-disc ml-6">
                                     {Object.entries(ranges).map(([range, prices]) => (
                                         <li key={range}>
                                             {range}: AED {prices.join(' / AED ')}

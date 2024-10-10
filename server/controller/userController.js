@@ -53,7 +53,6 @@ module.exports = {
         res.status(201).json({
           success: true,
           message: 'Price data updated successfully',
-          data: savedPriceData
         });
       } catch (error) {
         // Send error response in case of failure

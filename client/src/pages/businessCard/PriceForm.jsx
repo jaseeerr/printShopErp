@@ -53,6 +53,7 @@ const AddPriceRanges = () => {
 
   // Add the current criterion entry to the priceData
   const handleAddCriterion = () => {
+    toast.success('Added to price list, ')
     setPriceData({
       ...priceData,
       [newEntry.criterion]: {
@@ -65,26 +66,10 @@ const AddPriceRanges = () => {
       },
     });
 
-    const handleSubmit = async () => {
-      try {
+    // document.getElementById('saveBtn').click()
 
-        if(update)
-        {
-          const response = await axiosInstance.post('/updateBusinessCardRates', {
-            data: priceData,
-            id
-          });
-          
-        }
-        const response = await axiosInstance.post('/addBusinessCardRates', {
-          data: priceData
-        });
-        console.log('Price data submitted successfully:', response.data);
-      } catch (error) {
-        console.error('Error submitting price data:', error);
-      }
-    };
-    handleSubmit()
+   
+    // handleSubmit()
 
     
     // Reset new entry state
@@ -99,16 +84,65 @@ const AddPriceRanges = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Final priceData:', priceData);
+    // const handleSubmit = async () => {
+    //   try {
+    //     const response = await axios.post('http://localhost:3000/addBusinessCardRates', {
+    //       data: priceData
+    //     });
+    //     console.log('Price data submitted successfully:', response.data);
+    //   } catch (error) {
+    //     console.error('Error submitting price data:', error);
+    //   }
+    // };
+
     const handleSubmit = async () => {
       try {
-        const response = await axios.post('http://localhost:3000/addBusinessCardRates', {
-          data: priceData
-        });
-        console.log('Price data submitted successfully:', response.data);
+
+        if(update)
+        {
+          const response = await axiosInstance.post('/updateBusinessCardRates', {
+            data: priceData,
+            id
+          });
+
+          toast.dismiss()
+          if(response.data.success)
+          {
+            toast.success('Done')
+            setTimeout(()=>{
+                 location.reload()
+            },750)
+          }
+          else
+          {
+            toast.error("error")
+          }
+          
+        }
+        else
+        {
+          const response = await axiosInstance.post('/addBusinessCardRates', {
+            data: priceData
+          });
+          if(response.data.success)
+          {
+            toast.success('Done')
+            setTimeout(()=>{
+                 location.reload()
+            },750)
+          }
+          else
+          {
+            toast.error("error")
+          }
+          console.log('Price data submitted successfully:', response.data);
+        }
+       
       } catch (error) {
         console.error('Error submitting price data:', error);
       }
     };
+   
     handleSubmit()
 
   };
@@ -249,15 +283,16 @@ const AddPriceRanges = () => {
             className="mb-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 w-full"
             onClick={handleAddCriterion}
           >
-            Add Criterion to Price Data
+            Add to Price Data
           </button>
 
           {/* Submit Form Button */}
           <button
             type="submit"
+            id='saveBtn'
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 w-full"
           >
-            Generate Price Data
+            Save Price Pist
           </button>
         </form>
       </div>
