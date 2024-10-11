@@ -1,6 +1,8 @@
 import React, { useState,useEffect } from 'react';
 import axios from 'axios';
+import MyAxiosInstance from '../../../utils/axios';
 const BusinessCardCalculator = () => {
+  const axiosInstance = MyAxiosInstance()
   // Updated price data with ranges for different options and quantities
   const [priceData,setPriceData] = useState({
     gsm: {
@@ -47,8 +49,14 @@ const BusinessCardCalculator = () => {
   // Calculate total price based on selected options
   const calculatePrice = () => {
     const gsmPrice = priceData.gsm[selectedGsm];
+    
+    if (!gsmPrice) {
+      console.error("Selected GSM not found");
+      return;
+    }
+  
     let basePriceRange = [0, 0];
-
+  
     // Determine base price range based on quantity
     if (quantity <= 199) {
       basePriceRange = gsmPrice['1-199'];
@@ -59,13 +67,29 @@ const BusinessCardCalculator = () => {
     } else {
       basePriceRange = gsmPrice['1000+'];
     }
-
-    // Add other modifiers
-    const laminationRange = priceData.lamination[selectedLamination][quantity <= 199 ? '1-199' : quantity <= 499 ? '200-499' : quantity <= 999 ? '500-999' : '1000+'];
-    const cuttingRange = priceData.cutting[selectedCutting][quantity <= 199 ? '1-199' : quantity <= 499 ? '200-499' : quantity <= 999 ? '500-999' : '1000+'];
-    const colorRange = priceData.color[selectedColor][quantity <= 199 ? '1-199' : quantity <= 499 ? '200-499' : quantity <= 999 ? '500-999' : '1000+'];
-    const printTypeRange = priceData.printType[selectedPrintType][quantity <= 199 ? '1-199' : quantity <= 499 ? '200-499' : quantity <= 999 ? '500-999' : '1000+'];
-
+  
+    // Check if the selected options exist in priceData and provide defaults if not found
+    const laminationRange = priceData.lamination[selectedLamination]
+      ? priceData.lamination[selectedLamination][
+          Object.keys(priceData.lamination[selectedLamination]).find(key => {
+            const [min, max] = key.split('-').map(Number);
+            return quantity >= min && (max === Infinity || quantity <= max);
+          }) || '1-199'
+        ]
+      : [0, 0];
+  
+    const cuttingRange = priceData.cutting[selectedCutting]
+      ? priceData.cutting[selectedCutting][quantity <= 199 ? '1-199' : quantity <= 499 ? '200-499' : quantity <= 999 ? '500-999' : '1000+']
+      : [0, 0];
+  
+    const colorRange = priceData.color[selectedColor]
+      ? priceData.color[selectedColor][quantity <= 199 ? '1-199' : quantity <= 499 ? '200-499' : quantity <= 999 ? '500-999' : '1000+']
+      : [0, 0];
+  
+    const printTypeRange = priceData.printType[selectedPrintType]
+      ? priceData.printType[selectedPrintType][quantity <= 199 ? '1-199' : quantity <= 499 ? '200-499' : quantity <= 999 ? '500-999' : '1000+']
+      : [0, 0];
+  
     // Calculate total price range per card
     const pricePerCardMin =
       basePriceRange[0] +
@@ -73,24 +97,26 @@ const BusinessCardCalculator = () => {
       cuttingRange[0] +
       colorRange[0] +
       printTypeRange[0];
-
+  
     const pricePerCardMax =
       basePriceRange[1] +
       laminationRange[1] +
       cuttingRange[1] +
       colorRange[1] +
       printTypeRange[1];
-
+  
     // Calculate total price range for the quantity
     setTotalMinPrice((pricePerCardMin * quantity).toFixed(2));
     setTotalMaxPrice((pricePerCardMax * quantity).toFixed(2));
   };
+  
+  
 
   // Fetch price data when the component mounts
   useEffect(() => {
     const fetchPriceData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/getBusinessCardRates');
+        const response = await axiosInstance.get('/getBusinessCardRates');
         if (response.data.success) {
           // Assuming the data returned from the server is in the required format
           setPriceData(response.data.data[0].data);  // For simplicity, assuming the first document contains the required data

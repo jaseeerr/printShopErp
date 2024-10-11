@@ -66,11 +66,12 @@ const Navbar = () => {
                     Business Card
                   </a>
                   <a
-                    href="#"
+                    href="/uniform"
                     className="block px-4 py-2 text-gray-800  hover:bg-gray-100 "
                   >
-                    Stickers
+                    Uniform
                   </a>
+                  
                  
                 </div>
               )}
@@ -91,10 +92,10 @@ const Navbar = () => {
                     Business Card
                   </a>
                   <a
-                    href="#"
+                    href="/addUniformPriceData"
                     className="block px-4 py-2 text-gray-800  hover:bg-gray-100 "
                   >
-                    Stickers
+                    Uniform
                   </a>
                  
                 </div>

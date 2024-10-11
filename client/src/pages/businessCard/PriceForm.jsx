@@ -84,16 +84,7 @@ const AddPriceRanges = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Final priceData:', priceData);
-    // const handleSubmit = async () => {
-    //   try {
-    //     const response = await axios.post('http://localhost:3000/addBusinessCardRates', {
-    //       data: priceData
-    //     });
-    //     console.log('Price data submitted successfully:', response.data);
-    //   } catch (error) {
-    //     console.error('Error submitting price data:', error);
-    //   }
-    // };
+  
 
     const handleSubmit = async () => {
       try {
@@ -152,7 +143,7 @@ const AddPriceRanges = () => {
     useEffect(() => {
       const fetchPriceData = async () => {
         try {
-          const response = await axios.get('http://localhost:3000/getBusinessCardRates');
+          const response = await axiosInstance.get('/getBusinessCardRates');
           if (response.data.success) {
             // Assuming the data returned from the server is in the required format
             if(response.data.data.length>0)

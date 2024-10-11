@@ -12,6 +12,10 @@ router.post('/addBusinessCardRates', userController.addBusinessCardRates)
 router.get('/getBusinessCardRates', userController.getBusinessCardRates)
 router.post('/updateBusinessCardRates', userController.updateBusinessCardRates)
 
+router.post('/addUniformRates', userController.addUniformRares)
+router.post('/updateUniformRates', userController.updateUniformRares)
+router.get('/getUniformRates', userController.getUniformRates)
+
 
 
 

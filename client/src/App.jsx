@@ -5,6 +5,8 @@ import GiftSetCalculator from './pages/businessCard/BusinessCardCalulator';
 import BusinessCardCalculator from './pages/businessCard/BusinessCardCalulator';
 import BusinessCardPriceForm from './pages/businessCard/PriceForm';
 import AddPriceRanges from './pages/businessCard/PriceForm';
+import UniformPriceCalculator from './pages/uniform/UniformCalculator';
+import AddUniformPriceData from './pages/uniform/AddUniformPriceData';
 
 function App() {
     const [data, setData] = useState([]);
@@ -24,6 +26,8 @@ function App() {
                     <Route path="/" element={<BusinessCardCalculator />} />
                     <Route path="/businesscard" element={<BusinessCardCalculator />} />
                     <Route path="/businesscardForm" element={<AddPriceRanges />} />
+                    <Route path="/uniform" element={<UniformPriceCalculator />} />
+                    <Route path="/addUniformPriceData" element={<AddUniformPriceData />} />
                     {/* <Route path="/businessCardPriceData" element={<BusinessCardPriceData  />} /> */}
                     
                 </Routes>
