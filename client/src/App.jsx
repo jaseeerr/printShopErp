@@ -7,6 +7,10 @@ import BusinessCardPriceForm from './pages/businessCard/PriceForm';
 import AddPriceRanges from './pages/businessCard/PriceForm';
 import UniformPriceCalculator from './pages/uniform/UniformCalculator';
 import AddUniformPriceData from './pages/uniform/AddUniformPriceData';
+import BillBookCalculator from './pages/billBook/BillBookCalculator';
+import BillBookAddPriceForm from './pages/billBook/AddBillBookPriceData';
+import KeychainPriceCalculator from './pages/keychain/keychainCalculator';
+import AddKeychainPriceData from './pages/keychain/AddKeychainPriceData';
 
 function App() {
     const [data, setData] = useState([]);
@@ -28,6 +32,12 @@ function App() {
                     <Route path="/businesscardForm" element={<AddPriceRanges />} />
                     <Route path="/uniform" element={<UniformPriceCalculator />} />
                     <Route path="/addUniformPriceData" element={<AddUniformPriceData />} />
+                    <Route path="/billBook" element={<BillBookCalculator />} />
+                    <Route path="/addBillBookPriceData" element={<BillBookAddPriceForm />} />
+                    <Route path="/keychain" element={<KeychainPriceCalculator />} />
+                    <Route path="/addKeychainPriceData" element={<AddKeychainPriceData />} />
+
+
                     {/* <Route path="/businessCardPriceData" element={<BusinessCardPriceData  />} /> */}
                     
                 </Routes>

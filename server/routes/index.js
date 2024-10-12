@@ -16,6 +16,15 @@ router.post('/addUniformRates', userController.addUniformRares)
 router.post('/updateUniformRates', userController.updateUniformRares)
 router.get('/getUniformRates', userController.getUniformRates)
 
+router.post('/addBillBookRates', userController.addBillBookRates)
+router.get('/getBillBookRates', userController.getBillBookRates)
+router.post('/updateBillBookRates', userController.updateBillBookRates)
+
+router.post('/addKeychainRates', userController.addKeychainRates)
+router.get('/getKeychainRates', userController.getKeychainRates)
+router.post('/updateKeychainRates', userController.updateKeychainRates)
+
+
 
 
 

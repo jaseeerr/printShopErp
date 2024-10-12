@@ -71,6 +71,18 @@ const Navbar = () => {
                   >
                     Uniform
                   </a>
+                  <a
+                    href="/billBook"
+                    className="block px-4 py-2 text-gray-800  hover:bg-gray-100 "
+                  >
+                    Bill Book
+                  </a>
+                  <a
+                    href="/keychain"
+                    className="block px-4 py-2 text-gray-800  hover:bg-gray-100 "
+                  >
+                    Keychain
+                  </a>
                   
                  
                 </div>
@@ -97,6 +109,19 @@ const Navbar = () => {
                   >
                     Uniform
                   </a>
+                  <a
+                    href="/addBillBookPriceData"
+                    className="block px-4 py-2 text-gray-800  hover:bg-gray-100 "
+                  >
+                    Bill Book
+                  </a>
+                  <a
+                    href="/addKeychainPriceData"
+                    className="block px-4 py-2 text-gray-800  hover:bg-gray-100 "
+                  >
+                    Keychain
+                  </a>
+
                  
                 </div>
               )}

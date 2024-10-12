@@ -1,10 +1,11 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import PriceDisplay from '../../components/BusinessCardPriceTable';
-import axios from 'axios'
-import toast from 'react-hot-toast'
+import toast from 'react-hot-toast';
 import MyAxiosInstance from '../../../utils/axios';
+
 const AddPriceRanges = () => {
-  const axiosInstance = MyAxiosInstance()
+  const axiosInstance = MyAxiosInstance();
+  
   // State to store the price data
   const [priceData, setPriceData] = useState({
     gsm: {},
@@ -12,20 +13,18 @@ const AddPriceRanges = () => {
     cutting: {},
     color: {},
     printType: {},
+    material: {} // New Material Criterion
   });
-  const [id,setId] = useState()
-  const [update,setUpdate] = useState(false)
-
   
+  const [id, setId] = useState();
+  const [update, setUpdate] = useState(false);
 
-  // State to handle dynamic input for each criterion
   const [newEntry, setNewEntry] = useState({
     criterion: 'gsm',
     type: '',
     ranges: [{ minQty: '', maxQty: '', minPrice: '', maxPrice: '' }]
   });
 
-  // Handle input changes for criterion types and ranges
   const handleTypeChange = (e) => {
     setNewEntry({ ...newEntry, type: e.target.value });
   };
@@ -36,7 +35,6 @@ const AddPriceRanges = () => {
     setNewEntry({ ...newEntry, ranges: newRanges });
   };
 
-  // Add a new range to the ranges array
   const addRange = () => {
     setNewEntry({
       ...newEntry,
@@ -44,16 +42,14 @@ const AddPriceRanges = () => {
     });
   };
 
-  // Remove a range from the ranges array
   const removeRange = (index) => {
     const newRanges = [...newEntry.ranges];
     newRanges.splice(index, 1);
     setNewEntry({ ...newEntry, ranges: newRanges });
   };
 
-  // Add the current criterion entry to the priceData
   const handleAddCriterion = () => {
-    toast.success('Added to price list, ')
+    toast.success('Added to price list');
     setPriceData({
       ...priceData,
       [newEntry.criterion]: {
@@ -65,102 +61,57 @@ const AddPriceRanges = () => {
         }, {}),
       },
     });
-
-    // document.getElementById('saveBtn').click()
-
-   
-    // handleSubmit()
-
-    
-    // Reset new entry state
-    // setNewEntry({
-    //   criterion: 'gsm',
-    //   type: '',
-    //   ranges: [{ minQty: '', maxQty: '', minPrice: '', maxPrice: '' }]
-    // });
   };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Final priceData:', priceData);
-  
 
-    const handleSubmit = async () => {
-      try {
+    try {
+      if (update) {
+        const response = await axiosInstance.post('/updateBusinessCardRates', {
+          data: priceData,
+          id,
+        });
 
-        if(update)
-        {
-          const response = await axiosInstance.post('/updateBusinessCardRates', {
-            data: priceData,
-            id
-          });
-
-          toast.dismiss()
-          if(response.data.success)
-          {
-            toast.success('Done')
-            setTimeout(()=>{
-                 location.reload()
-            },750)
-          }
-          else
-          {
-            toast.error("error")
-          }
-          
+        if (response.data.success) {
+          toast.success('Updated successfully');
+          setTimeout(() => location.reload(), 750);
+        } else {
+          toast.error('Update failed');
         }
-        else
-        {
-          const response = await axiosInstance.post('/addBusinessCardRates', {
-            data: priceData
-          });
-          if(response.data.success)
-          {
-            toast.success('Done')
-            setTimeout(()=>{
-                 location.reload()
-            },750)
-          }
-          else
-          {
-            toast.error("error")
-          }
-          console.log('Price data submitted successfully:', response.data);
+      } else {
+        const response = await axiosInstance.post('/addBusinessCardRates', {
+          data: priceData,
+        });
+
+        if (response.data.success) {
+          toast.success('Added successfully');
+          setTimeout(() => location.reload(), 750);
+        } else {
+          toast.error('Submission failed');
         }
-       
-      } catch (error) {
-        console.error('Error submitting price data:', error);
       }
-    };
-   
-    handleSubmit()
-
+    } catch (error) {
+      console.error('Error submitting price data:', error);
+    }
   };
 
-
-    // Fetch price data when the component mounts
-    useEffect(() => {
-      const fetchPriceData = async () => {
-        try {
-          const response = await axiosInstance.get('/getBusinessCardRates');
-          if (response.data.success) {
-            // Assuming the data returned from the server is in the required format
-            if(response.data.data.length>0)
-            {
-              setUpdate(true)
-            }
-
-            setId(response.data.data[0]._id)
-            setPriceData(response.data.data[0].data);  // For simplicity, assuming the first document contains the required data
-          }
-        } catch (error) {
-          console.error('Error fetching price data:', error);
+  useEffect(() => {
+    const fetchPriceData = async () => {
+      try {
+        const response = await axiosInstance.get('/getBusinessCardRates');
+        if (response.data.success && response.data.data.length > 0) {
+          setUpdate(true);
+          setId(response.data.data[0]._id);
+          setPriceData(response.data.data[0].data);
         }
-      };
-  
-      fetchPriceData();
-    }, []);
+      } catch (error) {
+        console.error('Error fetching price data:', error);
+      }
+    };
+    fetchPriceData();
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
@@ -179,6 +130,7 @@ const AddPriceRanges = () => {
               <option value="cutting">Cutting</option>
               <option value="color">Color</option>
               <option value="printType">Print Type</option>
+              <option value="material">Material</option> {/* New Material Option */}
             </select>
           </div>
 
@@ -195,99 +147,63 @@ const AddPriceRanges = () => {
             />
           </div>
 
-          {/* Dynamic Quantity and Price Ranges */}
           <h3 className="text-lg font-semibold mb-2">Add Price Ranges</h3>
           {newEntry.ranges.map((range, index) => (
             <div key={index} className="mb-4 p-4 bg-gray-50 border rounded-lg">
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Min Quantity</label>
-                  <input
-                    type="number"
-                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none"
-                    value={range.minQty}
-                    onChange={(e) => handleRangeChange(index, 'minQty', e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Max Quantity</label>
-                  <input
-                    type="number"
-                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none"
-                    value={range.maxQty}
-                    onChange={(e) => handleRangeChange(index, 'maxQty', e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Min Price</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none"
-                    value={range.minPrice}
-                    onChange={(e) => handleRangeChange(index, 'minPrice', e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Max Price</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none"
-                    value={range.maxPrice}
-                    onChange={(e) => handleRangeChange(index, 'maxPrice', e.target.value)}
-                    required
-                  />
-                </div>
+                <input
+                  type="number"
+                  placeholder="Min Quantity"
+                  className="mt-1 block w-full py-2 px-3 border rounded-md"
+                  value={range.minQty}
+                  onChange={(e) => handleRangeChange(index, 'minQty', e.target.value)}
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Max Quantity"
+                  className="mt-1 block w-full py-2 px-3 border rounded-md"
+                  value={range.maxQty}
+                  onChange={(e) => handleRangeChange(index, 'maxQty', e.target.value)}
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Min Price"
+                  className="mt-1 block w-full py-2 px-3 border rounded-md"
+                  value={range.minPrice}
+                  onChange={(e) => handleRangeChange(index, 'minPrice', e.target.value)}
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Max Price"
+                  className="mt-1 block w-full py-2 px-3 border rounded-md"
+                  value={range.maxPrice}
+                  onChange={(e) => handleRangeChange(index, 'maxPrice', e.target.value)}
+                  required
+                />
               </div>
-
               {newEntry.ranges.length > 1 && (
-                <button
-                  type="button"
-                  className="mt-4 text-red-600 hover:text-red-800"
-                  onClick={() => removeRange(index)}
-                >
+                <button type="button" onClick={() => removeRange(index)}>
                   Remove Range
                 </button>
               )}
             </div>
           ))}
 
-          {/* Add Range Button */}
-          <button
-            type="button"
-            className="mb-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-            onClick={addRange}
-          >
+          <button type="button" onClick={addRange} className="mb-4 px-4 py-2 bg-blue-500 text-white rounded-md">
             Add Range
           </button>
-
-          {/* Add Criterion Button */}
-          <button
-            type="button"
-            className="mb-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 w-full"
-            onClick={handleAddCriterion}
-          >
+          <button type="button" onClick={handleAddCriterion} className="mb-4 w-full bg-green-600 text-white">
             Add to Price Data
           </button>
-
-          {/* Submit Form Button */}
-          <button
-            type="submit"
-            id='saveBtn'
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 w-full"
-          >
-            Save Price Pist
+          <button type="submit" className="w-full bg-blue-600 text-white">
+            Save Price List
           </button>
         </form>
       </div>
-      <PriceDisplay priceData={priceData}/>
+      <PriceDisplay priceData={priceData} />
     </div>
   );
 };
