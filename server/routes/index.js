@@ -28,6 +28,12 @@ router.get('/getFlyerRates', userController.getFlyerRates)
 router.post('/addFlyerRates', userController.addFlyerRates)
 router.post('/updateFlyerRates', userController.updateFlyerRates)
 
+router.get('/getWeddingCardRates', userController.getWeddingCardRates)
+router.post('/addWeddingCardRates', userController.addWeddingCardRates)
+router.post('/updateWeddingCardRates', userController.updateWeddingCardRates)
+
+
+
 
 
 

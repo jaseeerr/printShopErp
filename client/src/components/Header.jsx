@@ -89,6 +89,12 @@ const Navbar = () => {
                   >
                     Flyer
                   </a>
+                  <a
+                    href="/weddingCard"
+                    className="block px-4 py-2 text-gray-800  hover:bg-gray-100 "
+                  >
+                    Wedding Card
+                  </a>
                   
                  
                 </div>
@@ -132,6 +138,12 @@ const Navbar = () => {
                     className="block px-4 py-2 text-gray-800  hover:bg-gray-100 "
                   >
                     Flyer
+                  </a>
+                  <a
+                    href="/addWeddingCardPriceData"
+                    className="block px-4 py-2 text-gray-800  hover:bg-gray-100 "
+                  >
+                    Wedding Card
                   </a>
 
                  
