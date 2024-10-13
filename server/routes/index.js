@@ -24,6 +24,10 @@ router.post('/addKeychainRates', userController.addKeychainRates)
 router.get('/getKeychainRates', userController.getKeychainRates)
 router.post('/updateKeychainRates', userController.updateKeychainRates)
 
+router.get('/getFlyerRates', userController.getFlyerRates)
+router.post('/addFlyerRates', userController.addFlyerRates)
+router.post('/updateFlyerRates', userController.updateFlyerRates)
+
 
 
 

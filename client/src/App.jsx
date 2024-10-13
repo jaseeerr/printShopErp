@@ -11,6 +11,8 @@ import BillBookCalculator from './pages/billBook/BillBookCalculator';
 import BillBookAddPriceForm from './pages/billBook/AddBillBookPriceData';
 import KeychainPriceCalculator from './pages/keychain/keychainCalculator';
 import AddKeychainPriceData from './pages/keychain/AddKeychainPriceData';
+import FlyerPriceCalculator from './pages/flyer/FlyerCalculator';
+import FlyerPriceDataForm from './pages/flyer/AddFlyerPriceData';
 
 function App() {
     const [data, setData] = useState([]);
@@ -36,6 +38,9 @@ function App() {
                     <Route path="/addBillBookPriceData" element={<BillBookAddPriceForm />} />
                     <Route path="/keychain" element={<KeychainPriceCalculator />} />
                     <Route path="/addKeychainPriceData" element={<AddKeychainPriceData />} />
+                    <Route path="/flyer" element={<FlyerPriceCalculator />} />
+                    <Route path="/addFlyerPriceData" element={<FlyerPriceDataForm />} />
+
 
 
                     {/* <Route path="/businessCardPriceData" element={<BusinessCardPriceData  />} /> */}

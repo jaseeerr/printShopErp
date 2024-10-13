@@ -2,6 +2,7 @@ const BusinessCard = require('../models/businessCardSchema')
 const Uniform = require('../models/uniformSchema')
 const BillBook = require('../models/billBookSchema')
 const Keychain = require('../models/keychainSchema')
+const Flyer = require('../models/flyerSchema')
 module.exports = {
 
 
@@ -242,6 +243,69 @@ module.exports = {
         res.status(201).json({
           success: true,
           message: 'Price data updated successfully',
+        });
+      } catch (error) {
+        // Send error response in case of failure
+        console.error('Error saving price data:', error);
+        res.status(500).json({
+          success: false,
+          message: 'Failed to save price data',
+          error: error.message
+        });
+      }
+    },
+
+    getFlyerRates:async(req,res)=>{
+      try {
+        // Fetch all price data from MongoDB
+        const priceData = await Flyer.find({});
+        // console.log(priceData)
+        res.status(200).json({ success: true, data: priceData });
+      } catch (error) {
+        console.error('Error fetching price data:', error);
+        res.status(500).json({ success: false, message: 'Error fetching price data' });
+      }
+    },
+    updateFlyerRates:async(req,res)=>{
+      try {
+        const { id, data } = req.body; // Extract name and data from the request body
+    
+        
+        const update = await Flyer.findByIdAndUpdate(id,{$set:{data:data}})
+    
+        // Send success response
+        res.status(201).json({
+          success: true,
+          message: 'Price data updated successfully',
+        });
+      } catch (error) {
+        // Send error response in case of failure
+        console.error('Error saving price data:', error);
+        res.status(500).json({
+          success: false,
+          message: 'Failed to save price data',
+          error: error.message
+        });
+      }
+    },
+    addFlyerRates:async(req,res)=>{
+      try {
+        const { name, data } = req.body; // Extract name and data from the request body
+    
+        // Create a new instance of the PriceData model
+        const newPriceData = new Flyer({
+         
+          data: data
+        });
+    
+        // Save the priceData to the database
+        const savedPriceData = await newPriceData.save();
+    
+        // Send success response
+        res.status(201).json({
+          success: true,
+          message: 'Price data saved successfully',
+          data: savedPriceData
         });
       } catch (error) {
         // Send error response in case of failure
