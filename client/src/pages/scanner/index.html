@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <style>
+        video {
+            width: 100%;
+            height: auto;
+            border: 1px solid black;
+        }
+        canvas {
+            display: none; /* Hide canvas as we won't use it directly */
+        }
+    </style>
+</head>
+<body>
+    <h2>QR Code Scanner</h2>
+    <video id="preview" autoplay></video>
+    <canvas id="canvas"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script>
+        const video = document.getElementById('preview');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+
+        async function startScanner() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                video.srcObject = stream;
+
+                video.addEventListener('loadedmetadata', () => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    console.log("Starting QR code scan...");
+                    scanQRCode();
+                });
+            } catch (err) {
+                console.error('Error accessing the camera: ', err);
+                alert('Could not access camera. Please ensure permissions are enabled.');
+            }
+        }
+
+        function scanQRCode() {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, canvas.width, canvas.height);
+
+            if (code) {
+                alert(`Scanned QR Code: ${code.data}`);
+                // Stop the video stream after a successful scan
+                video.srcObject.getTracks().forEach(track => track.stop());
+                return;
+            } else {
+                console.log("No QR code detected, continuing scan...");
+            }
+
+            // Continuously scan until a QR code is found
+            requestAnimationFrame(scanQRCode);
+        }
+
+        startScanner();
+    </script>
+</body>
+</html>

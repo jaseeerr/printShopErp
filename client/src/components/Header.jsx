@@ -50,6 +50,9 @@ const Navbar = () => {
                         <li>
                             <Link to="/" className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700  ">Home</Link>
                         </li>
+                        <li>
+                            <Link to="/scanner" className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700  ">Scanner</Link>
+                        </li>
                         <li className="relative">
               <button
                 onClick={handleDropdownToggle1}

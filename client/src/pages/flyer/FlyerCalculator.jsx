@@ -47,6 +47,7 @@ const FlyerPriceCalculator = () => {
       try {
         const response = await axiosInstance.get('/getFlyerRates');
         if (response.data.success) {
+          console.log(response.data)
           setPriceData(response.data.data[0].data);
         }
       } catch (error) {
