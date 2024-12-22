@@ -53,7 +53,13 @@ const Navbar = () => {
                         <li>
                             <Link to="/scanner" className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700  ">Scanner</Link>
                         </li>
-                        <li className="relative">
+                        <li>
+                            <Link to="/qr" className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700  ">QR</Link>
+                        </li>
+                        <li>
+                            <Link to="/addProduct" className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700  ">Add Product</Link>
+                        </li>
+                        {/* <li className="relative">
               <button
                 onClick={handleDropdownToggle1}
                 className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 "
@@ -102,8 +108,8 @@ const Navbar = () => {
                  
                 </div>
               )}
-            </li>
-                        <li className="relative">
+            </li> */}
+                        {/* <li className="relative">
               <button
                 onClick={handleDropdownToggle}
                 className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 "
@@ -152,7 +158,7 @@ const Navbar = () => {
                  
                 </div>
               )}
-            </li>
+            </li> */}
                         {/* <li>
                             <Link to="/businessCardPriceData" className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700">Add Item</Link>
                         </li> */}

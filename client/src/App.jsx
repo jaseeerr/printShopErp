@@ -17,6 +17,8 @@ import WeddingCardCalculator from './pages/weddingCard/WeddingCardCalculator';
 import WeddingCardPriceForm from './pages/weddingCard/AddWeddingCardPriceData';
 import QRCodeScanner from './pages/scanner/Scanner';
 import QrScanner from './pages/scanner/Scanner';
+import QRCodeGenerator from './components/Qr';
+import ProductForm from './pages/inventory/AddProduct';
 
 function App() {
     const [data, setData] = useState([]);
@@ -34,6 +36,8 @@ function App() {
                 <Routes>
                  
                     <Route path="/" element={<BusinessCardCalculator />} />
+                    <Route path="/qr" element={<QRCodeGenerator />} />
+                    <Route path="/addProduct" element={<ProductForm />} />
                     <Route path="/businesscard" element={<BusinessCardCalculator />} />
                     <Route path="/businesscardForm" element={<AddPriceRanges />} />
                     <Route path="/uniform" element={<UniformPriceCalculator />} />
