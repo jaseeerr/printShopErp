@@ -384,15 +384,18 @@ module.exports = {
     addProduct:async(req,res)=>{
       try {
         const { name, price, stock, image } = req.body;
+        
+        // Make sure required fields are provided
+        if (!name || !price || !stock) {
+          return res.status(400).json({ message: "Name, price, and stock are required" });
+        }
     
         // Create a new product instance
         const newProduct = new Product({
-         
           name,
           price,
           stock,
-          image,
-          
+          image, // Can be the image URL or other metadata (like Cloudinary URL)
         });
     
         // Save the product to the database
@@ -406,6 +409,40 @@ module.exports = {
       } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Failed to add product", error: error.message });
+      }
+    },
+    getAllProducts:async(req,res)=>{
+      try {
+        const products = await Product.find(); // Fetch all products
+        res.status(200).json({ products }); // Send products in response
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Failed to fetch products', error: error.message });
+      }
+    },
+    editProduct:async(req,res)=>{
+      try {
+        const { id } = req.params;
+        const { name, price, stock, image } = req.body; // Extract updated data
+    
+        // Find the product by id and update its details
+        const updatedProduct = await Product.findByIdAndUpdate(
+          id,
+          { name, price, stock, image }, // New values to update
+          { new: true } // Return the updated product
+        );
+    
+        if (!updatedProduct) {
+          return res.status(404).json({ message: 'Product not found' });
+        }
+    
+        res.status(200).json({
+          message: 'Product updated successfully!',
+          product: updatedProduct, // Send the updated product
+        });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Failed to update product', error: error.message });
       }
     }
     

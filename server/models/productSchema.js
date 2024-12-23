@@ -1,12 +1,11 @@
-
 const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema({
-  name: { type: String, required: true,default:null },             // Product Name
-  price: { type: String,default:0 },            // Price (as string for flexibility)
-  stock: { type: Number,default:0 },
-  image: { type: Number,default:null },            // Stock quantity
-  history: { type: [],default:[] }     // Associated Invoice Number
+  name: { type: String, required: true },          // Product Name
+  price: { type: Number, default: 0 },           // Price (as string for flexibility)
+  stock: { type: Number, default: 0 },             // Stock quantity
+  image: { type: String, default: null },          // Image URL or path (store as string)
+  history: { type: Array, default: [] },           // History of the product
 }, {
   timestamps: true // Automatically add createdAt and updatedAt fields
 });

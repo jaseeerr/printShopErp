@@ -19,6 +19,7 @@ import QRCodeScanner from './pages/scanner/Scanner';
 import QrScanner from './pages/scanner/Scanner';
 import QRCodeGenerator from './components/Qr';
 import ProductForm from './pages/inventory/AddProduct';
+import ProductPage from './pages/inventory/Products';
 
 function App() {
     const [data, setData] = useState([]);
@@ -36,6 +37,7 @@ function App() {
                 <Routes>
                  
                     <Route path="/" element={<BusinessCardCalculator />} />
+                    <Route path="/products" element={<ProductPage />} />
                     <Route path="/qr" element={<QRCodeGenerator />} />
                     <Route path="/addProduct" element={<ProductForm />} />
                     <Route path="/businesscard" element={<BusinessCardCalculator />} />

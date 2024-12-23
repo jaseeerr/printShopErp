@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import MyAxiosInstance from '../../../utils/axios';
 import axios from 'axios'
+import toast from "react-hot-toast";
 const ProductForm = () => {
   const axiosInstance = MyAxiosInstance()
 
@@ -31,59 +32,56 @@ const ProductForm = () => {
     }
   };
 
-  const uploadSingleImageToCloudinary = async (image) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    toast.loading('Uploading Image');
+  
+    if (!imageFile) {
+      toast.error('No image selected');
+      return;
+    }
+  
     try {
-      // Fetch the image (in case it's a URL)
-      const response = await fetch(image);
-      const blob = await response.blob();
-  
-      // Create a unique filename using the current timestamp
-      const newFileName = `img_${Date.now()}`;
-  
       // Prepare the FormData to send with the image
       const data = new FormData();
-      data.append('file', blob, newFileName);
-      data.append('upload_preset', 'random'); // Replace with your upload preset
+      data.append('file', imageFile); // Use the image file directly
+      data.append('upload_preset', 'random'); // Replace with your Cloudinary upload preset
       data.append('cloud_name', 'dqrtxw295'); // Replace with your Cloudinary cloud name
   
       // Make a POST request to Cloudinary's upload API
       const cloudinaryResponse = await axios.post(
-        'https://api.cloudinary.com/v1_1/dfhcxw70v/auto/upload',
+        'https://api.cloudinary.com/v1_1/dqrtxw295/auto/upload',
         data
       );
   
-      // Handle Cloudinary response (return the public ID of the uploaded image)
-      
-      setFormData({ ...formData, image: cloudinaryResponse.data.public_id });
-      return cloudinaryResponse.data.public_id;
-    
+      console.log(cloudinaryResponse);
+  
+      // Set the image URL in formData
+      const updatedFormData = { ...formData, image: cloudinaryResponse.data.secure_url };
+  
+      toast.dismiss();
+      toast.loading('Adding Product');
+  
+      // Add the product using the formData with the image URL
+      const response = await axiosInstance.post('/addProduct', updatedFormData);
+  
+      toast.dismiss();
+      toast.success('Product added successfully');
+      console.log('Product added successfully:', response.data);
+  
     } catch (error) {
-      // Log any errors that occur during the upload process
-      console.error('Error uploading image to Cloudinary:', error);
-      setFormData({ ...formData, image: null });
-      return null; // Or you can handle errors based on your use case
+      toast.dismiss();
+      toast.error('Error Uploading Image or Adding Product');
+      console.error('Error:', error.response ? error.response.data : error.message);
     }
   };
-
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit =async (e) => {
 
-    e.preventDefault()
-   await uploadSingleImageToCloudinary(imageFile)
-    try {
-      const response = await axiosInstance.post('/addProduct', formData);
-      console.log('Product added successfully:', response.data);
-      // Handle success - you can display a success message or update your UI here
-    } catch (error) {
-      console.error('Error adding product:', error.response ? error.response.data : error.message);
-      // Handle error - you can display an error message or update your UI here
-    }
-   
-  };
 
 
 

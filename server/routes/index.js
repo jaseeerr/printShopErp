@@ -34,7 +34,8 @@ router.post('/updateWeddingCardRates', userController.updateWeddingCardRates)
 
 
 router.post('/addProduct', userController.addProduct)
-
+router.get('/getAllProducts', userController.getAllProducts)
+router.put('/editProduct/:id', userController.editProduct)
 
 
 
