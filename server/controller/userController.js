@@ -4,6 +4,7 @@ const BillBook = require('../models/billBookSchema')
 const Keychain = require('../models/keychainSchema')
 const Flyer = require('../models/flyerSchema')
 const WeddingCard = require('../models/weddingCardSchema')
+const Product = require('../models/productSchema')
 module.exports = {
 
 
@@ -380,5 +381,32 @@ module.exports = {
         });
       }
     },
+    addProduct:async(req,res)=>{
+      try {
+        const { name, price, stock, image } = req.body;
+    
+        // Create a new product instance
+        const newProduct = new Product({
+         
+          name,
+          price,
+          stock,
+          image,
+          
+        });
+    
+        // Save the product to the database
+        const savedProduct = await newProduct.save();
+    
+        // Respond with the saved product details
+        res.status(201).json({
+          message: "Product added successfully!",
+          product: savedProduct
+        });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Failed to add product", error: error.message });
+      }
+    }
     
 }

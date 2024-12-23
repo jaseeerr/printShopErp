@@ -33,6 +33,10 @@ router.post('/addWeddingCardRates', userController.addWeddingCardRates)
 router.post('/updateWeddingCardRates', userController.updateWeddingCardRates)
 
 
+router.post('/addProduct', userController.addProduct)
+
+
+
 
 
 
