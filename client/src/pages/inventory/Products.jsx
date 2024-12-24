@@ -11,8 +11,13 @@ import { QRCodeCanvas } from "qrcode.react"; // QRCodeCanvas for rendering QR co
 // TailwindCSS Styling
 const ProductPage = () => {
   const axiosInstance = MyAxiosInstance();
-
   const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
 
@@ -143,8 +148,19 @@ const ProductPage = () => {
     <div className="container mx-auto p-4 bg-gray-100 min-h-screen">
       <h1 className="text-4xl font-bold mb-8 text-gray-800">Product List</h1>
 
+      <div className="mb-6">
+  <input
+    type="text"
+    placeholder="Search products by name..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="w-full sm:w-1/3 px-4 py-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+    aria-label="Search products by name"
+  />
+</div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <div
             key={product._id}
             className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105"
@@ -155,12 +171,15 @@ const ProductPage = () => {
               className="w-full h-64 object-cover"
             />
             <div className="p-6">
+              <a href={`/view/${product._id}`}>
               <h2 className="text-2xl font-semibold mb-2 text-gray-800">{product.name}</h2>
+              </a>
               <p className="text-gray-600 mb-2">Price: ${product.price.toFixed(2)}</p>
               <p className="text-gray-600 mb-4">Stock: {product.stock}</p>
               <QRCodeCanvas
               ref={qrRef} // Reference for downloading the canvas
-              value={`http://localhost:5173/view/${product._id}`}
+              // value={`http://localhost:5173/view/${product._id}`}
+              value={`https://notebook.estateconnect.cloud/view/${product._id}`}
               className="p-4 bg-white border border-gray-200 rounded"
               size={75}
             />
@@ -233,20 +252,7 @@ const ProductPage = () => {
             />
           </div>
 
-          <div>
-            <label htmlFor="stock" className="block text-gray-700 font-medium mb-2">
-              Stock
-            </label>
-            <input
-              type="number"
-              id="stock"
-              name="stock"
-              value={formData.stock}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+       
 
           <div>
             <label htmlFor="image" className="block text-gray-700 font-medium mb-2">

@@ -30,7 +30,7 @@ const Navbar = () => {
                     {/* <span className="self-center text-2xl font-semibold whitespace-nowrap ">Print Shop ERP</span> */}
                 </a>
                 <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-                    <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center ">Get started</button>
+                    {/* <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center ">Get started</button> */}
                     <button
                         onClick={handleToggle}
                         type="button"
@@ -48,20 +48,20 @@ const Navbar = () => {
                     <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white ">
                        
                         <li>
-                            <Link to="/" className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700  ">Home</Link>
+                            <Link to="/products" className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700  ">Home</Link>
                         </li>
                         <li>
                             <Link to="/scanner" className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700  ">Scanner</Link>
                         </li>
-                        <li>
+                        {/* <li>
                             <Link to="/qr" className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700  ">QR</Link>
-                        </li>
+                        </li> */}
                         <li>
                             <Link to="/addProduct" className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700  ">Add Product</Link>
                         </li>
-                        <li>
+                        {/* <li>
                             <Link to="/products" className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700  ">Products</Link>
-                        </li>
+                        </li> */}
                         {/* <li className="relative">
               <button
                 onClick={handleDropdownToggle1}

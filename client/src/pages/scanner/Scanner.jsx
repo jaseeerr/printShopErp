@@ -57,8 +57,12 @@ const QrScanner = () => {
         const code = jsQR(imageData.data, canvas.width, canvas.height);
 
         if (code) {
-            alert(`Scanned QR Code: ${code.data}`);
+            // alert(`Scanned QR Code: ${code.data}`);
             stopScanner(); // Stop the scanner after a successful scan
+            window.open(code.data, '_blank');
+            setTimeout(()=>{
+               location.reload()
+            },1000)
             return;
         }
 

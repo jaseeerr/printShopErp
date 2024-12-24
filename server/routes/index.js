@@ -36,6 +36,11 @@ router.post('/updateWeddingCardRates', userController.updateWeddingCardRates)
 router.post('/addProduct', userController.addProduct)
 router.get('/getAllProducts', userController.getAllProducts)
 router.put('/editProduct/:id', userController.editProduct)
+router.get('/getProduct/:id', userController.getProduct)
+router.put('/stockout/:id', userController.stockout)
+router.put('/addStock/:id', userController.addStock)
+
+
 
 
 

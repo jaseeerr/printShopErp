@@ -444,6 +444,88 @@ module.exports = {
         console.error(error);
         res.status(500).json({ message: 'Failed to update product', error: error.message });
       }
+    },
+    getProduct:async(req,res)=>{
+      try {
+        const product = await Product.findById(req.params.id); // Find the product by ID
+        if (!product) {
+          return res.status(404).json({ message: "Product not found" });
+        }
+        res.json(product); // Send the product details as the response
+      } catch (err) {
+        res.status(500).json({ message: "Server error", error: err.message });
+      }
+    },
+    stockout:async(req,res)=>{
+      const { id } = req.params;
+      const { quantity, invoiceNumber } = req.body;
+    
+      try {
+        const product = await Product.findById(id);
+        if (!product) {
+          return res.status(404).json({ message: "Product not found" });
+        }
+    
+        // Ensure that there's enough stock for the stock out operation
+        if (product.stock < quantity) {
+          return res.status(400).json({ message: "Not enough stock available" });
+        }
+    
+        // Add the stock out record to the history with a timestamp
+        const stockOutEntry = {
+          quantity,
+          invoiceNumber,
+          timestamp: new Date(),
+        };
+        product.history.push(stockOutEntry);
+    
+        // Update the stock by subtracting the quantity
+        product.stock -= quantity;
+    
+        // Save the updated product to the database
+        await product.save();
+    
+        res.json({ message: "Stock updated successfully", product });
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error", error: err.message });
+      }
+    },
+    addStock:async(req,res)=>{
+      const { id } = req.params;
+      const { quantity } = req.body;
+    
+      // Check if the quantity is a valid positive number
+      if (quantity <= 0 || isNaN(quantity)) {
+        return res.status(400).json({ message: "Invalid quantity value" });
+      }
+    
+      try {
+        // Find the product by ID
+        const product = await Product.findById(id);
+        if (!product) {
+          return res.status(404).json({ message: "Product not found" });
+        }
+    
+        // Add the stock to the current stock
+        product.stock += quantity;
+    
+        // Add a new entry to the product's history (with a timestamp)
+        const stockInEntry = {
+          quantity,
+          timestamp: new Date(), // Current timestamp when the stock is added
+        };
+        product.history.push(stockInEntry);
+    
+        // Save the updated product
+        await product.save();
+    
+        // Return the updated product
+        res.json({ message: "Stock added successfully", product });
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error", error: err.message });
+      }
     }
     
 }
