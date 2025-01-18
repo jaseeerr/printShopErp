@@ -130,10 +130,17 @@ const ProductPage = () => {
         isOpen={isAddProductModalOpen}
         onRequestClose={closeAddProductModal}
         contentLabel="Add Product"
-        className="bg-white p-8 rounded-lg shadow-xl max-w-md mx-auto mt-20"
+        className="bg-white p-1 rounded-lg shadow-xl max-w-md mx-auto mt-2 h-screen"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
       >
         <ProductForm closeModal={closeAddProductModal} />
+        <button
+        type="button"
+        onClick={closeAddProductModal}
+        className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      >
+        Close
+      </button>
       </Modal>
 
       {/* Modal for QR scanner */}
@@ -145,6 +152,13 @@ const ProductPage = () => {
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
       >
         <QrScanner closeModal={closeQrScannerModal} />
+        <button
+        type="button"
+        onClick={closeQrScannerModal}
+        className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      >
+        Close
+      </button>
       </Modal>
     </div>
   );

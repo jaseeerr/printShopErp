@@ -88,7 +88,7 @@ const ProductForm = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-md mx-auto overflow-auto bg-white p-6 rounded-lg shadow-md mt-16"
+      className="max-w-md mx-auto h-auto overflow-auto bg-white p-6 rounded-lg shadow-md mt-1"
     >
       <h2 className="text-2xl font-bold mb-6 text-gray-700 text-center">
         Add Product
@@ -174,7 +174,7 @@ const ProductForm = () => {
           <img
             src={imageUrl}
             alt="Image Preview"
-            className="w-80 h-80 mt-2 rounded-lg mx-auto"
+            className="w-24 h-24 mt-2 rounded-lg mx-auto"
           />
         </div>
       )}
