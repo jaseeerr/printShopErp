@@ -200,8 +200,8 @@ const ProductPage = () => {
               <p className="text-gray-600 mb-4">Stock: {product.stock}</p>
               <QRCodeCanvas
               ref={qrRef} // Reference for downloading the canvas
-              value={`http://localhost:5173/view/${product._id}`}
-              // value={`https://notebook.estateconnect.cloud/view/${product._id}`}
+              // value={`http://localhost:5173/view/${product._id}`}
+              value={`https://notebook.estateconnect.cloud/view/${product._id}`}
               className="p-4 bg-white border border-gray-200 rounded"
               size={75}
             />

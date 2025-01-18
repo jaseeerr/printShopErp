@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import { Edit, Download, X, Plus, Camera } from 'lucide-react';
 import MyAxiosInstance from "../../../utils/axios";
 import Modal from "react-modal";
@@ -13,7 +13,7 @@ const ProductPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
   const [isQrScannerModalOpen, setIsQrScannerModalOpen] = useState(false);
-  
+  const qrRef = useRef(null);
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -30,6 +30,38 @@ const ProductPage = () => {
 
     fetchProducts();
   }, []);
+
+  const downloadQRCode = () => {
+    const canvas = qrRef.current;
+    if (canvas) {
+      // Define padding size (e.g., 20px)
+      const padding = 10;
+  
+      // Create a new canvas with padding
+      const newCanvas = document.createElement("canvas");
+      const ctx = newCanvas.getContext("2d");
+  
+      // Set new canvas size, considering padding
+      newCanvas.width = canvas.width + padding * 2;
+      newCanvas.height = canvas.height + padding * 2;
+  
+      // Fill the new canvas with white color (or any color you want)
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
+  
+      // Draw the QR code from the original canvas onto the new one, with padding
+      ctx.drawImage(canvas, padding, padding);
+  
+      // Get the image URL of the new canvas
+      const imageURL = newCanvas.toDataURL("image/png");
+  
+      // Create a link to download the image
+      const link = document.createElement("a");
+      link.href = imageURL;
+      link.download = `QRCode.png`; // Naming the QR code
+      link.click();
+    }
+  };
 
   const openAddProductModal = () => setIsAddProductModalOpen(true);
   const closeAddProductModal = () => setIsAddProductModalOpen(false);
@@ -90,6 +122,7 @@ const ProductPage = () => {
               <p className="text-gray-600 mb-4">Stock: {product.stock}</p>
               <div className="mb-4">
                 <QRCodeCanvas
+                ref={qrRef}
                   value={`https://notebook.estateconnect.cloud/view/${product._id}`}
                   className="p-2 bg-white border border-gray-200 rounded"
                   size={100}
@@ -104,6 +137,7 @@ const ProductPage = () => {
                   Edit
                 </button>
                 <button
+                onClick={downloadQRCode}
                   className="flex items-center justify-center bg-gray-200 text-black py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-300"
                   aria-label={`Download QR Code for ${product.name}`}
                 >
