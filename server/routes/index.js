@@ -8,6 +8,12 @@ router.get('/', function(req, res, next) {
 });
 
 
+router.post('/signup', userController.signup)
+router.post('/login', userController.login)
+
+
+
+
 router.post('/addBusinessCardRates', userController.addBusinessCardRates)
 router.get('/getBusinessCardRates', userController.getBusinessCardRates)
 router.post('/updateBusinessCardRates', userController.updateBusinessCardRates)
@@ -39,6 +45,10 @@ router.put('/editProduct/:id', userController.editProduct)
 router.get('/getProduct/:id', userController.getProduct)
 router.put('/stockout/:id', userController.stockout)
 router.put('/addStock/:id', userController.addStock)
+
+
+
+
 
 
 

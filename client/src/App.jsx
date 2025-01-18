@@ -21,6 +21,8 @@ import QRCodeGenerator from './components/Qr';
 import ProductForm from './pages/inventory/AddProduct';
 import ProductPage from './pages/inventory/Products';
 import ViewProduct from './pages/inventory/ViewProduct';
+import Login from './pages/loginSignup/Login';
+import SignUp from './pages/loginSignup/Signup';
 
 function App() {
     const [data, setData] = useState([]);
@@ -38,11 +40,13 @@ function App() {
                 <Routes>
                  
                     <Route path="/" element={<ProductPage />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<SignUp />} />
                     <Route path="/view/:id" element={<ViewProduct />} />
-                    <Route path="/products" element={<ProductPage />} />
-                    <Route path="/qr" element={<QRCodeGenerator />} />
-                    <Route path="/addProduct" element={<ProductForm />} />
-                    <Route path="/businesscard" element={<BusinessCardCalculator />} />
+                    {/* <Route path="/products" element={<ProductPage />} /> */}
+                    {/* <Route path="/qr" element={<QRCodeGenerator />} />
+                    <Route path="/addProduct" element={<ProductForm />} /> */}
+                    {/* <Route path="/businesscard" element={<BusinessCardCalculator />} />
                     <Route path="/businesscardForm" element={<AddPriceRanges />} />
                     <Route path="/uniform" element={<UniformPriceCalculator />} />
                     <Route path="/addUniformPriceData" element={<AddUniformPriceData />} />
@@ -53,8 +57,8 @@ function App() {
                     <Route path="/flyer" element={<FlyerPriceCalculator />} />
                     <Route path="/addFlyerPriceData" element={<FlyerPriceDataForm />} />
                     <Route path="/weddingCard" element={<WeddingCardCalculator />} />
-                    <Route path="/addWeddingCardPriceData" element={<WeddingCardPriceForm />} />
-                    <Route path="/scanner" element={<QrScanner />} />
+                    <Route path="/addWeddingCardPriceData" element={<WeddingCardPriceForm />} /> */}
+                    {/* <Route path="/scanner" element={<QrScanner />} /> */}
 
 
 

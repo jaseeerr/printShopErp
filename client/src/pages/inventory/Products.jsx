@@ -13,6 +13,8 @@ const ProductPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
   const [isQrScannerModalOpen, setIsQrScannerModalOpen] = useState(false);
+  const [isChangePasssword, setIsChangePasssword] = useState(false);
+
   const qrRef = useRef(null);
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -67,10 +69,12 @@ const ProductPage = () => {
   const closeAddProductModal = () => setIsAddProductModalOpen(false);
   const openQrScannerModal = () => setIsQrScannerModalOpen(true);
   const closeQrScannerModal = () => setIsQrScannerModalOpen(false);
+  const closeChangePassswordModal = () => setIsChangePasssword(false);
+
 
   return (
     <div className="container mx-auto p-4 bg-white min-h-screen">
-      <h1 className="text-4xl font-bold mb-8 text-black">Product List</h1>
+      <h1 className="text-4xl font-bold mb-8 text-black text-center">INVENTORY</h1>
 
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
         <div className="w-full md:w-1/3">
@@ -118,7 +122,7 @@ const ProductPage = () => {
               <a href={`/view/${product._id}`} className="block mb-2">
                 <h2 className="text-2xl font-semibold text-black hover:underline">{product.name}</h2>
               </a>
-              <p className="text-gray-600 mb-2">Price: ${product.price.toFixed(2)}</p>
+              <p className="text-gray-600 mb-2">Price: AED {product.price.toFixed(2)}</p>
               <p className="text-gray-600 mb-4">Stock: {product.stock}</p>
               <div className="mb-4">
                 <QRCodeCanvas
@@ -166,6 +170,24 @@ const ProductPage = () => {
         </button>
         <h2 className="text-2xl font-bold mb-4 text-black">Add Product</h2>
         <ProductForm closeModal={closeAddProductModal} />
+      </Modal>
+
+      <Modal
+        isOpen={isQrScannerModalOpen}
+        onRequestClose={closeQrScannerModal}
+        contentLabel="QR Code Scanner"
+        className="bg-white p-6 rounded-lg shadow-xl max-w-md mx-auto mt-20 outline-none"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+      >
+        <button
+          onClick={closeQrScannerModal}
+          className="absolute top-4 right-4 text-black hover:text-gray-700"
+          aria-label="Close modal"
+        >
+          <X size={24} />
+        </button>
+        <h2 className="text-2xl font-bold mb-4 text-black">Scan QR Code</h2>
+        <QrScanner closeModal={closeQrScannerModal} />
       </Modal>
 
       <Modal

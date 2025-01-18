@@ -5,9 +5,58 @@ const Keychain = require('../models/keychainSchema')
 const Flyer = require('../models/flyerSchema')
 const WeddingCard = require('../models/weddingCardSchema')
 const Product = require('../models/productSchema')
+const User = require('../models/userSchema')
+const argon2 = require('argon2');
+const jwt = require('jsonwebtoken');
 module.exports = {
 
 
+
+  signup:async(req,res)=>{
+    const { username, password } = req.body;
+  
+    // Check if the user already exists
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Username already taken' });
+    }
+  
+    // Hash the password using argon2
+    const hashedPassword = await argon2.hash(password);
+  
+    // Create and save the new user
+    const user = new User({ username, password: hashedPassword });
+    await user.save();
+  
+    // Respond with success
+    res.status(201).json({ message: 'User created successfully' });
+  },
+  login:async(req,res)=>{
+    const { username, password } = req.body;
+  
+    try {
+      // Find user by username
+      const user = await User.findOne({ username });
+      if (!user) {
+        return res.json({ baduser: true, success: false });
+      }
+  
+      // Verify the password using argon2
+      const isMatch = await argon2.verify(user.password, password);
+      if (!isMatch) {
+        return res.json({ baduser: true, success: false });
+      }
+  
+      // Generate JWT token
+      const userToken = jwt.sign({ userId: user._id, username: user.username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+  
+      // Send the token back to the user
+      res.json({ success: true, token: userToken });
+    } catch (error) {
+      console.error(error);
+      res.json({ baduser: true, success: false });
+    }
+  },
     addBusinessCardRates:async(req,res)=>{
       try {
         const { name, data } = req.body; // Extract name and data from the request body

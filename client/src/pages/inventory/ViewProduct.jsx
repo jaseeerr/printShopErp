@@ -88,7 +88,7 @@ const ViewProduct = () => {
             />
             <div className="p-4">
               <h2 className="text-2xl font-bold text-gray-800">{product.name}</h2>
-              <p className="text-xl text-gray-500 mt-2">${product.price}</p>
+              <p className="text-xl text-gray-500 mt-2">AED {product.price}</p>
               <p className="text-gray-600 mt-4">{product.stock} in stock</p>
               <div className="mt-6 flex justify-between">
                 <button
