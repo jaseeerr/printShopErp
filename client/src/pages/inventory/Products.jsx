@@ -1,11 +1,12 @@
 import React, { useState, useEffect,useRef } from "react";
-import { Edit, Download, X, Plus, Camera } from 'lucide-react';
+import { Edit, Download, X, Plus, Camera,KeyRound,LogOut } from 'lucide-react';
 import MyAxiosInstance from "../../../utils/axios";
 import Modal from "react-modal";
 import ProductForm from "./AddProduct";
 import QrScanner from "../scanner/Scanner";
 import { IMG_CDN } from "../../../urls/urls";
 import { QRCodeCanvas } from "qrcode.react";
+import PasswordForm from "./ChangePassword";
 
 const ProductPage = () => {
   const axiosInstance = MyAxiosInstance();
@@ -14,6 +15,7 @@ const ProductPage = () => {
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
   const [isQrScannerModalOpen, setIsQrScannerModalOpen] = useState(false);
   const [isChangePasssword, setIsChangePasssword] = useState(false);
+  
 
   const qrRef = useRef(null);
   const filteredProducts = products.filter((product) =>
@@ -30,6 +32,10 @@ const ProductPage = () => {
       }
     };
 
+    if(!localStorage.getItem('userToken'))
+    {
+      location.href='/login'
+    }
     fetchProducts();
   }, []);
 
@@ -70,24 +76,33 @@ const ProductPage = () => {
   const openQrScannerModal = () => setIsQrScannerModalOpen(true);
   const closeQrScannerModal = () => setIsQrScannerModalOpen(false);
   const closeChangePassswordModal = () => setIsChangePasssword(false);
+  const openChangePassswordModal = () => setIsChangePasssword(true);
 
 
   return (
     <div className="container mx-auto p-4 bg-white min-h-screen">
-      <h1 className="text-4xl font-bold mb-8 text-black text-center">INVENTORY</h1>
-
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
-        <div className="w-full md:w-1/3">
-          <input
-            type="text"
-            placeholder="Search products by name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-            aria-label="Search products by name"
-          />
+       <div className="flex space-x-4 justify-center mt-7 hidden">
+          <button
+            onClick={openChangePassswordModal}
+            className="flex items-center justify-center bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-300"
+            aria-label="Add Product"
+          >
+            <KeyRound size={18} className="mr-2" />
+            Change Password
+          </button>
+          <button
+            onClick={()=>{
+              localStorage.removeItem('userToken')
+              location.href='/login'
+            }}
+            className="flex items-center justify-center bg-gray-200 text-black py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-300"
+            aria-label="Scan QR Code"
+          >
+            <LogOut size={18} className="mr-2" />
+            Logout
+          </button>
         </div>
-        <div className="flex space-x-4">
+       <div className="flex space-x-4 justify-center mt-7 mb-5">
           <button
             onClick={openAddProductModal}
             className="flex items-center justify-center bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-300"
@@ -105,6 +120,20 @@ const ProductPage = () => {
             Scan QR
           </button>
         </div>
+      <h1 className="text-4xl font-bold mb-8 text-black text-center">INVENTORY</h1>
+
+      <div className="flex flex-col md:flex-row justify-center items-center mb-6 space-y-4 md:space-y-0">
+        <div className="w-full md:w-1/3">
+          <input
+            type="text"
+            placeholder="Search products by name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+            aria-label="Search products by name"
+          />
+        </div>
+       
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -191,21 +220,28 @@ const ProductPage = () => {
       </Modal>
 
       <Modal
-        isOpen={isQrScannerModalOpen}
-        onRequestClose={closeQrScannerModal}
-        contentLabel="QR Code Scanner"
-        className="bg-white p-6 rounded-lg shadow-xl max-w-md mx-auto mt-20 outline-none"
+        isOpen={isChangePasssword}
+        onRequestClose={openChangePassswordModal}
+        contentLabel="Change Password"
+        className="bg-white p-6 rounded-lg shadow-xl max-w-md mx-auto outline-none"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
       >
         <button
-          onClick={closeQrScannerModal}
+          onClick={closeChangePassswordModal}
           className="absolute top-4 right-4 text-black hover:text-gray-700"
           aria-label="Close modal"
         >
           <X size={24} />
         </button>
-        <h2 className="text-2xl font-bold mb-4 text-black">Scan QR Code</h2>
-        <QrScanner closeModal={closeQrScannerModal} />
+        {/* <h2 className="text-2xl font-bold mb-4 text-black">Scan QR Code</h2> */}
+        <PasswordForm closeModal={closeChangePassswordModal} />
+        <button
+            onClick={openQrScannerModal}
+            className="flex w-full mt-3 font-semibold items-center justify-center bg-gray-200 text-black py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-300"
+            aria-label="Scan QR Code"
+          >
+          Close
+          </button>
       </Modal>
     </div>
   );

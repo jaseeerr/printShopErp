@@ -57,6 +57,51 @@ module.exports = {
       res.json({ baduser: true, success: false });
     }
   },
+  changePassword:async(req,res)=>{
+    const { newPassword, repeatPassword } = req.body;
+  
+    if (!username || !oldPassword || !newPassword || !repeatPassword) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+  
+    // Check if new password matches repeat password
+    if (newPassword !== repeatPassword) {
+      return res.status(400).json({ message: 'New password and repeat password do not match' });
+    }
+  
+    // Validate password length
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+  
+    try {
+      // Find the user in the database
+      const user = await User.findOne({ username });
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      // Verify the old password
+      const passwordMatch = await argon2.verify(user.password, oldPassword);
+  
+      if (!passwordMatch) {
+        return res.status(400).json({ message: 'Old password is incorrect' });
+      }
+  
+      // Hash the new password
+      const hashedPassword = await argon2.hash(newPassword);
+  
+      // Update the password in the database
+      user.password = hashedPassword;
+      await user.save();
+  
+      res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  },
     addBusinessCardRates:async(req,res)=>{
       try {
         const { name, data } = req.body; // Extract name and data from the request body
