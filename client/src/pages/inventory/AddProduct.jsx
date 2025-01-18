@@ -88,7 +88,7 @@ const ProductForm = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md mt-16"
+      className="max-w-md mx-auto overflow-auto bg-white p-6 rounded-lg shadow-md mt-16"
     >
       <h2 className="text-2xl font-bold mb-6 text-gray-700 text-center">
         Add Product

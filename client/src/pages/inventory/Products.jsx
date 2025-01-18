@@ -1,41 +1,27 @@
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import { Edit, Download, X } from 'lucide-react'
-
+import React, { useState, useEffect } from "react";
+import { Edit, Download, X, Plus, Camera } from 'lucide-react';  // Ensure you import Plus and Camera icons
 import MyAxiosInstance from "../../../utils/axios";
-import { IMG_CDN } from "../../../urls/urls";
-// Modal component to edit product details
 import Modal from "react-modal";
-import { QRCodeCanvas } from "qrcode.react"; // QRCodeCanvas for rendering QR codes
+import ProductForm from "./AddProduct"; // Import the ProductForm component
+import QrScanner from "../scanner/Scanner"; // Import the QrScanner component
+import { IMG_CDN } from "../../../urls/urls";
+import { QRCodeCanvas } from "qrcode.react"; 
 
-// TailwindCSS Styling
 const ProductPage = () => {
   const axiosInstance = MyAxiosInstance();
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
+  const [isQrScannerModalOpen, setIsQrScannerModalOpen] = useState(false);
+  
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
-
-  const [formData, setFormData] = useState({
-    name: "",
-    price: "",
-    stock: "",
-    image: "",
-  });
-  const [imageFile, setImageFile] = useState(null); // For storing uploaded image
-
-  const qrRef = useRef(null); // Ref to capture the QR code canvas for downloading
-
-  // Fetch all products on component mount
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axiosInstance.get("/getAllProducts"); // Adjust to your endpoint
+        const response = await axiosInstance.get("/getAllProducts");
         setProducts(response.data.products);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -45,119 +31,57 @@ const ProductPage = () => {
     fetchProducts();
   }, []);
 
-  // Open modal to edit product
-  const openModal = (product) => {
-    setEditingProduct(product);
-    setFormData({
-      name: product.name,
-      price: product.price,
-      stock: product.stock,
-      image: product.image,
-    });
-    setIsModalOpen(true);
+  const openAddProductModal = () => {
+    setIsAddProductModalOpen(true);
   };
 
-  // Close modal
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setEditingProduct(null);
-    setFormData({ name: "", price: "", stock: "", image: "" });
-    setImageFile(null); // Reset image file input
+  const closeAddProductModal = () => {
+    setIsAddProductModalOpen(false);
   };
 
-  // Handle form input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  const openQrScannerModal = () => {
+    setIsQrScannerModalOpen(true);
   };
 
-  // Handle image file change (image upload)
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setImageFile(file);
-  };
-
-  // Upload image to Cloudinary (or similar service)
-  const uploadImage = async (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "random"); // Replace with your upload preset
-    formData.append("cloud_name", "dqrtxw295"); // Replace with your Cloudinary cloud name
-
-    try {
-      const response = await axios.post(
-        "https://api.cloudinary.com/v1_1/dqrtxw295/auto/upload",
-        formData
-      );
-      return response.data.secure_url; // Return the image URL
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      return null;
-    }
-  };
-
-  // Handle form submission to edit product
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    let newImageUrl = formData.image; // Default to current image URL if no new image uploaded
-    if (imageFile) {
-      // Upload the new image and get the new URL
-      newImageUrl = await uploadImage(imageFile);
-    }
-
-    try {
-      const response = await axiosInstance.put(`/editProduct/${editingProduct._id}`, {
-        ...formData,
-        image: newImageUrl, // Update image URL if new image is uploaded
-      });
-
-      console.log("Product updated:", response.data);
-
-      // Update the product in the state
-      const updatedProducts = products.map((product) =>
-        product._id === editingProduct._id
-          ? { ...product, ...formData, image: newImageUrl }
-          : product
-      );
-      setProducts(updatedProducts);
-
-      // Close modal
-      closeModal();
-    } catch (error) {
-      console.error("Error editing product:", error);
-    }
-  };
-
-  // Function to download QR code as an image
-  const downloadQRCode = () => {
-    const canvas = qrRef.current;
-    if (canvas) {
-      const imageURL = canvas.toDataURL("image/png");
-      const link = document.createElement("a");
-      link.href = imageURL;
-      link.download = `QRCode.png`; // Naming the QR code with the product name
-      link.click();
-    }
+  const closeQrScannerModal = () => {
+    setIsQrScannerModalOpen(false);
   };
 
   return (
     <div className="container mx-auto p-4 bg-gray-100 min-h-screen">
       <h1 className="text-4xl font-bold mb-8 text-gray-800">Product List</h1>
 
-      <div className="mb-6">
-  <input
-    type="text"
-    placeholder="Search products by name..."
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    className="w-full sm:w-1/3 px-4 py-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-    aria-label="Search products by name"
-  />
-</div>
+      {/* Bar with buttons */}
+      <div className="flex justify-between mb-6">
+        <div>
+          <input
+            type="text"
+            placeholder="Search products by name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full sm:w-1/3 px-4 py-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            aria-label="Search products by name"
+          />
+        </div>
+        <div className="flex space-x-4">
+          {/* Add Product Button */}
+          <button
+            onClick={openAddProductModal}
+            className="flex items-center justify-center bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+          >
+            <Plus size={18} className="mr-2" />
+            Add Product
+          </button>
+          {/* QR Scanner Button */}
+          <button
+            onClick={openQrScannerModal}
+            className="flex items-center justify-center bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors duration-300"
+          >
+            <Camera size={18} className="mr-2" />
+            Scan QR
+          </button>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredProducts.map((product) => (
@@ -172,30 +96,24 @@ const ProductPage = () => {
             />
             <div className="p-6">
               <a href={`/view/${product._id}`}>
-              <h2 className="text-2xl font-semibold mb-2 text-gray-800">{product.name}</h2>
+                <h2 className="text-2xl font-semibold mb-2 text-gray-800">{product.name}</h2>
               </a>
               <p className="text-gray-600 mb-2">Price: ${product.price.toFixed(2)}</p>
               <p className="text-gray-600 mb-4">Stock: {product.stock}</p>
               <QRCodeCanvas
-              ref={qrRef} // Reference for downloading the canvas
-              // value={`http://localhost:5173/view/${product._id}`}
-              value={`https://notebook.estateconnect.cloud/view/${product._id}`}
-              className="p-4 bg-white border border-gray-200 rounded"
-              size={75}
-            />
+                value={`https://notebook.estateconnect.cloud/view/${product._id}`}
+                // value={`http://localhost:5173/view/${product._id}`}
+                className="p-4 bg-white border border-gray-200 rounded"
+                size={75}
+              />
               <div className="flex justify-between">
                 <button
-                  onClick={() => openModal(product)}
                   className="flex items-center justify-center bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300"
                 >
                   <Edit size={18} className="mr-2" />
                   Edit
                 </button>
                 <button
-                  onClick={() => {
-                    setEditingProduct(product)
-                    downloadQRCode()
-                  }}
                   className="flex items-center justify-center bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors duration-300"
                 >
                   <Download size={18} className="mr-2" />
@@ -207,91 +125,27 @@ const ProductPage = () => {
         ))}
       </div>
 
+      {/* Modal for adding product */}
       <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        contentLabel="Edit Product"
+        isOpen={isAddProductModalOpen}
+        onRequestClose={closeAddProductModal}
+        contentLabel="Add Product"
         className="bg-white p-8 rounded-lg shadow-xl max-w-md mx-auto mt-20"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
       >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-gray-800">Edit Product</h2>
-          <button onClick={closeModal} className="text-gray-500 hover:text-gray-700">
-            <X size={24} />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="name" className="block text-gray-700 font-medium mb-2">
-              Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="price" className="block text-gray-700 font-medium mb-2">
-              Price
-            </label>
-            <input
-              type="number"
-              id="price"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-       
-
-          <div>
-            <label htmlFor="image" className="block text-gray-700 font-medium mb-2">
-              Image Upload
-            </label>
-            <input
-              type="file"
-              id="image"
-              name="image"
-              onChange={handleImageChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="flex justify-end space-x-4 mt-6">
-            <button
-              type="button"
-              onClick={closeModal}
-              className="bg-gray-300 text-gray-700 py-2 px-6 rounded-lg hover:bg-gray-400 transition-colors duration-300"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition-colors duration-300"
-            >
-              Save Changes
-            </button>
-          </div>
-        </form>
+        <ProductForm closeModal={closeAddProductModal} />
       </Modal>
 
-      <div className="hidden">
-        <QRCodeCanvas
-          ref={qrRef}
-          value={editingProduct ? `http://localhost:5173/view/${editingProduct._id}` : ''}
-          size={150}
-        />
-      </div>
+      {/* Modal for QR scanner */}
+      <Modal
+        isOpen={isQrScannerModalOpen}
+        onRequestClose={closeQrScannerModal}
+        contentLabel="QR Code Scanner"
+        className="bg-white p-8 rounded-lg shadow-xl max-w-md mx-auto mt-20"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+      >
+        <QrScanner closeModal={closeQrScannerModal} />
+      </Modal>
     </div>
   );
 };
