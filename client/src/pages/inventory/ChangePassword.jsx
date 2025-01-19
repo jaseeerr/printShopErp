@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Check, X } from 'lucide-react';
-
+import MyAxiosInstance from '../../../utils/axios';
 const PasswordForm = () => {
+  const axiosInstance = MyAxiosInstance()
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -9,9 +10,30 @@ const PasswordForm = () => {
 
   const passwordsMatch = password === repeatPassword && password !== '';
 
+  const handleChangePassword = async()=>{
+    try {
+      const response = await axiosInstance.put('/updatePassword', {
+        newPassword:password,
+        repeatPassword,
+      });
+  
+      if (response.status === 200) {
+        alert('Password updated successfully');
+      }
+    } catch (error) {
+      if (error.response) {
+        // Handle known errors from the server
+        alert(error.response.data.message);
+      } else {
+        // Handle unexpected errors
+        alert('An error occurred while updating the password');
+      }
+    }
+  }
+
   return (
     <div className=" bg-gray-100 flex items-center justify-center px-4">
-      <form className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+      <form onSubmit={handleChangePassword} className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Change Password</h2>
         
         <div className="mb-6">

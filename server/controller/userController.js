@@ -58,9 +58,10 @@ module.exports = {
     }
   },
   changePassword:async(req,res)=>{
+    
     const { newPassword, repeatPassword } = req.body;
-  
-    if (!username || !oldPassword || !newPassword || !repeatPassword) {
+    
+    if (!newPassword || !repeatPassword) {
       return res.status(400).json({ message: 'All fields are required' });
     }
   
@@ -75,18 +76,11 @@ module.exports = {
     }
   
     try {
-      // Find the user in the database
-      const user = await User.findOne({ username });
+      // Find the user by ID from req.user._id
+      const user = await User.findById(req.user._id);
   
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
-      }
-  
-      // Verify the old password
-      const passwordMatch = await argon2.verify(user.password, oldPassword);
-  
-      if (!passwordMatch) {
-        return res.status(400).json({ message: 'Old password is incorrect' });
       }
   
       // Hash the new password

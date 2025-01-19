@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const Data = require('../models/businessCardSchema')
+const Auth = require('../auth/auth')
 const userController = require('../controller/userController')
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -10,7 +11,16 @@ router.get('/', function(req, res, next) {
 
 router.post('/signup', userController.signup)
 router.post('/login', userController.login)
-router.put('/updatePassword',userController.changePassword)
+router.put('/updatePassword',Auth.userAuth,userController.changePassword)
+
+
+router.post('/addProduct',Auth.userAuth, userController.addProduct)
+router.get('/getAllProducts',Auth.userAuth, userController.getAllProducts)
+router.put('/editProduct/:id',Auth.userAuth, userController.editProduct)
+router.get('/getProduct/:id',Auth.userAuth, userController.getProduct)
+router.put('/stockout/:id',Auth.userAuth, userController.stockout)
+router.put('/addStock/:id',Auth.userAuth, userController.addStock)
+
 
 
 
@@ -40,12 +50,7 @@ router.post('/addWeddingCardRates', userController.addWeddingCardRates)
 router.post('/updateWeddingCardRates', userController.updateWeddingCardRates)
 
 
-router.post('/addProduct', userController.addProduct)
-router.get('/getAllProducts', userController.getAllProducts)
-router.put('/editProduct/:id', userController.editProduct)
-router.get('/getProduct/:id', userController.getProduct)
-router.put('/stockout/:id', userController.stockout)
-router.put('/addStock/:id', userController.addStock)
+
 
 
 

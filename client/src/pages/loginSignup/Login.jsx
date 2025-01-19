@@ -13,7 +13,14 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await axios.post(`${SERVER_URL}/login`, { username, password });
+      console.log(response)
+
       localStorage.setItem('userToken', response.data.token); // Store the token in localStorage
+      if(response.data.baduser)
+      {
+        alert('Incorrect username/password')
+        return
+      }
       navigate('/'); // Redirect to dashboard or home page after login
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred');

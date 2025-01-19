@@ -81,7 +81,7 @@ const ProductPage = () => {
 
   return (
     <div className="container mx-auto p-4 bg-white min-h-screen">
-       <div className="flex space-x-4 justify-center mt-7 hidden">
+       <div className="flex space-x-4 justify-center mt-7">
           <button
             onClick={openChangePassswordModal}
             className="flex items-center justify-center bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-300"
