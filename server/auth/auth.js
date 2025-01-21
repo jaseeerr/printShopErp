@@ -13,10 +13,11 @@ module.exports = {
         return res.status(403).json({ success: false, message: 'Forbidden' });
       }
 
-    //   if(user.block)
-    //   {
-    //     return res.status(403).json({ success: false, message: 'Forbidden' });
-    //   }
+    
+      if(user.block)
+      {
+        return res.status(403).json({ success: false, message: 'Forbidden' });
+      }
 
     req.user = user;
      

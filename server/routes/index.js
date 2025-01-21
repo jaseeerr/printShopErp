@@ -11,6 +11,8 @@ router.get('/', function(req, res, next) {
 
 router.post('/signup', userController.signup)
 router.post('/login', userController.login)
+router.post('/loginSu', Auth.userAuth, userController.loginSu)
+
 router.put('/updatePassword',Auth.userAuth,userController.changePassword)
 
 

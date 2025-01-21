@@ -1,13 +1,14 @@
 import React, { useState, useEffect,useRef } from "react";
-import { Edit, Download, X, Plus, Camera,KeyRound,LogOut } from 'lucide-react';
+import { Edit, Download, X,Eye,EyeOff , Plus, Camera,KeyRound,LogOut,Save, Upload,ChevronDown } from 'lucide-react';
 import MyAxiosInstance from "../../../utils/axios";
 import Modal from "react-modal";
 import ProductForm from "./AddProduct";
 import QrScanner from "../scanner/Scanner";
 import { IMG_CDN } from "../../../urls/urls";
+import axios from "axios";
 import { QRCodeCanvas } from "qrcode.react";
 import PasswordForm from "./ChangePassword";
-
+import toast from "react-hot-toast";
 const ProductPage = () => {
   const axiosInstance = MyAxiosInstance();
   const [products, setProducts] = useState([]);
@@ -16,6 +17,64 @@ const ProductPage = () => {
   const [isQrScannerModalOpen, setIsQrScannerModalOpen] = useState(false);
   const [isChangePasssword, setIsChangePasssword] = useState(false);
   
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [updatedProduct, setUpdatedProduct] = useState();
+  const [imageFile, setImageFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImageFile(file);
+  };
+  const handleChange = (e) => {
+    setUpdatedProduct({
+      ...updatedProduct,
+      [e.target.name]: e.target.value,
+    });
+  };
+// handle edit product
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  toast.loading('Updating Product');
+
+  try {
+    let imageUrl = updatedProduct.image;
+
+    // Upload image if a new one is selected
+    if (imageFile) {
+      const data = new FormData();
+      data.append('file', imageFile);
+      data.append('upload_preset', 'random');
+      data.append('cloud_name', 'dqrtxw295');
+
+      const cloudinaryResponse = await axios.post(
+        'https://api.cloudinary.com/v1_1/dqrtxw295/auto/upload',
+        data
+      );
+
+      imageUrl = cloudinaryResponse.data.secure_url;
+    }
+
+    // Prepare updated product data
+    const updatedFormData = { ...updatedProduct, image: imageUrl };
+
+    // Send updated product details to backend
+    await axiosInstance.put(`/editProduct/${updatedProduct._id}`, updatedFormData);
+    toast.dismiss();
+    toast.success('Product updated successfully');
+    setTimeout(() => {
+      location.reload();
+    }, 500);
+    
+  } catch (error) {
+    toast.dismiss();
+    toast.error('Error updating product');
+    console.error('Error:', error.response ? error.response.data : error.message);
+  }
+  
+  setLoading(false);
+};
 
   const qrRef = useRef(null);
   const filteredProducts = products.filter((product) =>
@@ -34,6 +93,7 @@ const ProductPage = () => {
 
     if(!localStorage.getItem('userToken'))
     {
+      localStorage.removeItem('superUser')
       location.href='/login'
     }
     fetchProducts();
@@ -79,8 +139,71 @@ const ProductPage = () => {
   const openChangePassswordModal = () => setIsChangePasssword(true);
 
 
+
+  const [isToggled, setIsToggled] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleToggleClick = () => {
+    if(isToggled)
+    {
+      localStorage.removeItem('superUser')
+      setIsToggled(false)
+      return
+    }
+    setIsPasswordModalOpen(true);
+  };
+
+  const handlePasswordSubmit = async(e) => {
+    e.preventDefault();
+
+    const res = await axiosInstance.post('/loginSu',{password})
+    if(res.data.success)
+    {
+      setIsToggled(true);
+      localStorage.setItem('superUser','P@$$')
+      setIsPasswordModalOpen(false);
+      setPassword('');
+      setError('');
+    }
+    else
+    {
+      localStorage.removeItem('superUser')
+      setError('Incorrect password');
+      setIsToggled(false)
+    }
+   
+  };
+
+  const closeModal = () => {
+    setIsPasswordModalOpen(false);
+    setPassword('');
+    setError('');
+  };
+
+
+
   return (
     <div className="container mx-auto p-4 bg-white min-h-screen">
+      <div className="flex items-center justify-center p-4">
+      <button
+        className={`w-14 h-8 flex items-center rounded-full p-1 duration-300 ease-in-out ${
+          isToggled ? 'bg-black' : 'bg-gray-300'
+        }`}
+        onClick={handleToggleClick}
+      >
+        <div
+          className={`bg-white w-6 h-6 rounded-full shadow-md transform duration-300 ease-in-out ${
+            isToggled ? 'translate-x-6' : ''
+          }`}
+        ></div>
+      </button>
+      <span className="ml-3 text-sm font-medium text-gray-700">
+        {isToggled ? 'ON' : 'OFF'}
+      </span>
+    </div>  
        <div className="flex space-x-4 justify-center mt-7">
           <button
             onClick={openChangePassswordModal}
@@ -151,6 +274,9 @@ const ProductPage = () => {
               <a href={`/view/${product._id}`} className="block mb-2">
                 <h2 className="text-2xl font-semibold text-black hover:underline">{product.name}</h2>
               </a>
+              <p className="text-gray-600 mb-2">Product Code: {product?.code}</p>
+              <p className="text-gray-600 mb-2">Category: {product?.category}</p>
+              
               <p className="text-gray-600 mb-2">Price: AED {product.price.toFixed(2)}</p>
               <p className="text-gray-600 mb-4">Stock: {product.stock}</p>
               <div className="mb-4">
@@ -163,6 +289,10 @@ const ProductPage = () => {
               </div>
               <div className="flex justify-between">
                 <button
+                onClick={()=>{
+                  setUpdatedProduct(product)
+                  setIsModalOpen(true)
+                }}
                   className="flex items-center justify-center bg-gray-800 text-white py-2 px-4 rounded-lg hover:bg-black transition-colors duration-300"
                   aria-label={`Edit ${product.name}`}
                 >
@@ -183,11 +313,202 @@ const ProductPage = () => {
         ))}
       </div>
 
+
+      {isPasswordModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-900">Enter Password</h2>
+              <button
+                onClick={closeModal}
+                className="text-gray-400 hover:text-gray-600"
+                aria-label="Close modal"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+              </div>
+              {error && <p className="text-red-500 text-sm">{error}</p>}
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50 transition-colors duration-300"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+
+      {isModalOpen && (
+       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+         <h2 className="text-2xl font-semibold mb-6 text-black">Update Product</h2>
+         <form onSubmit={handleSubmit} className="space-y-6">
+
+         <div>
+        <label htmlFor="code" className="block text-sm font-medium text-gray-700 mb-1">Product Code</label>
+        <input
+          type="text"
+          id="code"
+          name="code"
+          value={updatedProduct.code}
+          onChange={handleChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black"
+          required
+        />
+      </div>
+
+           <div>
+             <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+             <input
+               type="text"
+               name="name"
+               value={updatedProduct.name}
+               onChange={handleChange}
+               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black"
+               required
+             />
+           </div>
+ 
+           <div>
+            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <div className="relative">
+              <select
+                id="category"
+                name="category"
+                value={updatedProduct.category}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black appearance-none"
+                required
+              >
+                <option value="">Select a category</option>
+                <option value="1">Category 1</option>
+                <option value="2">Category 2</option>
+                <option value="3">Category 3</option>
+                <option value="4">Category 4</option>
+                <option value="5">Category 5</option>
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
+            </div>
+          </div>
+
+          <div>
+        <label htmlFor="costPrice" className="block text-sm font-medium text-gray-700 mb-1">Cost Price</label>
+        <input
+          type="number"
+          id="costPrice"
+          name="costPrice"
+          value={updatedProduct.costPrice}
+          onChange={handleChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black"
+          required
+        />
+      </div>
+
+           <div>
+             <label className="block text-sm font-medium text-gray-700 mb-1">Selling Price</label>
+             <input
+               type="number"
+               name="price"
+               value={updatedProduct.price}
+               onChange={handleChange}
+               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black"
+               required
+             />
+           </div>
+ 
+           <div>
+             <label className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
+             <input
+               type="number"
+               name="stock"
+               value={updatedProduct.stock}
+               onChange={handleChange}
+               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black"
+               required
+             />
+           </div>
+ 
+           <div>
+             <label className="block text-sm font-medium text-gray-700 mb-1">Product Image</label>
+             <div className="relative">
+               <input
+                 type="file"
+                 accept="image/*"
+                 onChange={handleImageChange}
+                 className="hidden"
+                 id="file-upload"
+               />
+               <label
+                 htmlFor="file-upload"
+                 className="flex items-center justify-center w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black cursor-pointer"
+               >
+                 <Upload size={20} className="mr-2" />
+                 Choose Image
+               </label>
+             </div>
+             {updatedProduct.image && (
+               <div className="mt-4">
+                 <img src={updatedProduct.image || "/placeholder.svg"} alt="Product" className="h-32 w-32 rounded-lg object-cover mx-auto" />
+               </div>
+             )}
+           </div>
+ 
+           <div className="flex justify-end space-x-4 mt-8">
+             <button
+               type="button"
+               onClick={()=>setIsModalOpen(false)}
+               className="flex items-center px-4 py-2 bg-gray-200 text-black rounded-md hover:bg-gray-300 transition-colors duration-300"
+             >
+               <X size={18} className="mr-2" />
+               Cancel
+             </button>
+             <button
+               type="submit"
+               className={`flex items-center px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors duration-300 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+               disabled={loading}
+             >
+               <Save size={18} className="mr-2" />
+               {loading ? 'Updating...' : 'Save Changes'}
+             </button>
+           </div>
+         </form>
+       </div>
+     </div>
+      )}
+
       <Modal
         isOpen={isAddProductModalOpen}
         onRequestClose={closeAddProductModal}
         contentLabel="Add Product"
-        className="bg-white p-6 rounded-lg shadow-xl max-w-md mx-auto mt-20 outline-none"
+        className="bg-white p-6 rounded-lg shadow-xl max-w-md mx-auto mt-2 outline-none"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
       >
         <button
@@ -236,7 +557,7 @@ const ProductPage = () => {
         {/* <h2 className="text-2xl font-bold mb-4 text-black">Scan QR Code</h2> */}
         <PasswordForm closeModal={closeChangePassswordModal} />
         <button
-            onClick={openQrScannerModal}
+            onClick={closeChangePassswordModal}
             className="flex w-full mt-3 font-semibold items-center justify-center bg-gray-200 text-black py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-300"
             aria-label="Scan QR Code"
           >

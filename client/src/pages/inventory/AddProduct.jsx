@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import MyAxiosInstance from '../../../utils/axios';
 import axios from 'axios';
 import { toast } from "react-hot-toast";
-import { Upload, X } from 'lucide-react';
+import { Upload, X ,ChevronDown } from 'lucide-react';
 
 const ProductForm = ({ closeModal }) => {
   const axiosInstance = MyAxiosInstance();
@@ -32,7 +32,7 @@ const ProductForm = ({ closeModal }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    toast.loading('Uploading Image', { duration: 2000 });
+    toast.loading('Uploading Product');
   
     if (!imageFile) {
       toast.error('No image selected');
@@ -51,14 +51,17 @@ const ProductForm = ({ closeModal }) => {
       );
   
       const updatedFormData = { ...formData, image: cloudinaryResponse.data.secure_url };
-  
-      toast.loading('Adding Product', { duration: 2000 });
+  // toast.dismiss()
+      // toast.loading('Adding Product');
   
       const response = await axiosInstance.post('/addProduct', updatedFormData);
-  
+   toast.dismiss()
       toast.success('Product added successfully');
       console.log('Product added successfully:', response.data);
       closeModal();
+      setTimeout(()=>{
+        location.reload()
+      },500)
   
     } catch (error) {
       toast.error('Error Uploading Image or Adding Product');
@@ -74,11 +77,30 @@ const ProductForm = ({ closeModal }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md"
+      className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md overflow-auto h-96"
     >
       {/* <h2 className="text-2xl font-bold mb-6 text-black text-center">
         Add Product
       </h2> */}
+
+<div className="mb-4">
+        <label
+          htmlFor="code"
+          className="block text-gray-700 font-medium mb-1"
+        >
+          Product Code
+        </label>
+        <input
+          type="text"
+          id="code"
+          name="code"
+          value={formData.code}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
+          required
+        />
+      </div>
+
 
       <div className="mb-4">
         <label
@@ -100,10 +122,56 @@ const ProductForm = ({ closeModal }) => {
 
       <div className="mb-4">
         <label
+          htmlFor="category"
+          className="block text-gray-700 font-medium mb-1"
+        >
+          Category
+        </label>
+        <div className="relative">
+          <select
+            id="category"
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black appearance-none"
+            required
+          >
+            <option value="">Select a category</option>
+            <option value="1">Category 1</option>
+            <option value="2">Category 2</option>
+            <option value="3">Category 3</option>
+            <option value="4">Category 4</option>
+            <option value="5">Category 5</option>
+          </select>
+          <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
+        </div>
+      </div>
+
+
+      <div className="mb-4">
+        <label
+          htmlFor="costPrice"
+          className="block text-gray-700 font-medium mb-1"
+        >
+          Cost Price
+        </label>
+        <input
+          type="number"
+          id="costPrice"
+          name="costPrice"
+          value={formData.costPrice}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
+          required
+        />
+      </div>
+
+      <div className="mb-4">
+        <label
           htmlFor="price"
           className="block text-gray-700 font-medium mb-1"
         >
-          Price
+          Selling Price
         </label>
         <input
           type="number"

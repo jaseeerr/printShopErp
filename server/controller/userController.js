@@ -48,10 +48,38 @@ module.exports = {
       }
   
       // Generate JWT token
-      const userToken = jwt.sign({ userId: user._id, username: user.username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+      const userToken = jwt.sign({ _id: user._id, username: user.username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
   
       // Send the token back to the user
       res.json({ success: true, token: userToken });
+    } catch (error) {
+      console.error(error);
+      res.json({ baduser: true, success: false });
+    }
+  },
+
+  loginSu:async(req,res)=>{
+    const {password} = req.body;
+    try {
+      // Find user by username
+      const user = await User.findById(req.user._id);
+      if (!user) {
+        return res.json({ baduser: true, success: false });
+      }
+      
+  
+      // Verify the password using argon2
+      const isMatch = await argon2.verify(user.suPassword, password);
+      if (!isMatch) {
+        return res.json({ baduser: true, success: false });
+      }
+  
+  
+      // Generate JWT token
+      // const userToken = jwt.sign({ userId: user._id, username: user.username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+  
+      // Send the token back to the user
+      res.json({ success: true});
     } catch (error) {
       console.error(error);
       res.json({ baduser: true, success: false });
@@ -471,7 +499,7 @@ module.exports = {
     },
     addProduct:async(req,res)=>{
       try {
-        const { name, price, stock, image } = req.body;
+        const { name, price, stock, image, code, category, costPrice } = req.body;
         
         // Make sure required fields are provided
         if (!name || !price || !stock) {
@@ -481,6 +509,9 @@ module.exports = {
         // Create a new product instance
         const newProduct = new Product({
           name,
+          code,
+          category,
+          costPrice,
           price,
           stock,
           image, // Can be the image URL or other metadata (like Cloudinary URL)
@@ -511,12 +542,12 @@ module.exports = {
     editProduct:async(req,res)=>{
       try {
         const { id } = req.params;
-        const { name, price, stock, image } = req.body; // Extract updated data
+        const { name, price, stock, image,code, category, costPrice  } = req.body; // Extract updated data
     
         // Find the product by id and update its details
         const updatedProduct = await Product.findByIdAndUpdate(
           id,
-          { name, price, stock, image }, // New values to update
+          { name, price, stock, image,code, category, costPrice  }, // New values to update
           { new: true } // Return the updated product
         );
     
