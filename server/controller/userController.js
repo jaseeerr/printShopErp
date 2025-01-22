@@ -6,6 +6,7 @@ const Flyer = require('../models/flyerSchema')
 const WeddingCard = require('../models/weddingCardSchema')
 const Product = require('../models/productSchema')
 const User = require('../models/userSchema')
+const Category = require('../models/categorySchema')
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
 module.exports = {
@@ -73,6 +74,32 @@ module.exports = {
       if (!isMatch) {
         return res.json({ baduser: true, success: false });
       }
+
+      const change = await User.findByIdAndUpdate(req.user._id,{$set:{suAccess:true}})
+  
+  
+      // Generate JWT token
+      // const userToken = jwt.sign({ userId: user._id, username: user.username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+  
+      // Send the token back to the user
+      res.json({ success: true});
+    } catch (error) {
+      console.error(error);
+      res.json({ baduser: true, success: false });
+    }
+  },
+  logoutSu:async(req,res)=>{
+    try {
+      // Find user by username
+      const user = await User.findById(req.user._id);
+      if (!user) {
+        return res.json({ baduser: true, success: false });
+      }
+      
+  
+    
+
+      const change = await User.findByIdAndUpdate(req.user._id,{$set:{suAccess:false}})
   
   
       // Generate JWT token
@@ -530,10 +557,65 @@ module.exports = {
         res.status(500).json({ message: "Failed to add product", error: error.message });
       }
     },
+    addCategory:async(req,res)=>{
+      try {
+        const { name } = req.body;
+        
+        // Make sure required fields are provided
+        if (!name) {
+          return res.status(400).json({ message: "Name required" });
+        }
+    
+        // Create a new product instance
+        const newCategory = new Category({
+          name
+          
+        });
+    
+        // Save the product to the database
+        const savedCategory = await newCategory.save();
+
+        const newCat = await Category.find()
+    
+        // Respond with the saved product details
+        res.status(201).json({
+          message: "Category added successfully!",
+          category: newCat
+        });
+      } catch (error) {
+        console.error(error);
+        
+        if (error.code === 11000) {
+          return res.status(400).json({ message: "Cannot add duplicate category" });
+        }
+
+        res.status(500).json({ message: "Failed to add category", error: error.message });
+      }
+    },
+    getAllCategories:async(req,res)=>{
+      try {
+        const categories = await Category.find(); // Fetch all products
+        res.status(200).json({ categories }); // Send products in response
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Failed to fetch category', error: error.message });
+      }
+    },
+    deleteCategory:async(req,res)=>{
+      try {
+        const categoriesDel = await Category.findByIdAndDelete(req.params.id);
+        const newCat = await Category.find()  // Fetch all products
+        res.status(200).json({ categories:newCat, success:true }); // Send products in response
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Failed to fetch category', success:false ,error: error.message });
+      }
+    },
     getAllProducts:async(req,res)=>{
       try {
         const products = await Product.find(); // Fetch all products
-        res.status(200).json({ products }); // Send products in response
+        const categories = await Category.find()
+        res.status(200).json({ products,categories }); // Send products in response
       } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Failed to fetch products', error: error.message });

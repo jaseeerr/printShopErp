@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MyAxiosInstance from '../../../utils/axios';
 import axios from 'axios';
 import { toast } from "react-hot-toast";
@@ -6,7 +6,7 @@ import { Upload, X ,ChevronDown } from 'lucide-react';
 
 const ProductForm = ({ closeModal }) => {
   const axiosInstance = MyAxiosInstance();
-
+  const [categories,setCategories] = useState([])
   const [formData, setFormData] = useState({
     name: "",
     price: "",
@@ -73,6 +73,16 @@ const ProductForm = ({ closeModal }) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+  
+
+   useEffect(() => {
+      const fetchCat = async () => {
+        const res = await axiosInstance.get("/getAllCategories")
+        setCategories(res.data.categories.reverse())
+      }
+  
+      fetchCat()
+    }, [])
 
   return (
     <form
@@ -133,15 +143,13 @@ const ProductForm = ({ closeModal }) => {
             name="category"
             value={formData.category}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black appearance-none"
+            className="w-full px-4 overflow-auto py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black appearance-none"
             required
           >
             <option value="">Select a category</option>
-            <option value="1">Category 1</option>
-            <option value="2">Category 2</option>
-            <option value="3">Category 3</option>
-            <option value="4">Category 4</option>
-            <option value="5">Category 5</option>
+            {categories.map((x)=>{
+                   return( <option value={X.name}>{x.name}</option>)
+                })}
           </select>
           <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
         </div>

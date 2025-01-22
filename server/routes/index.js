@@ -13,13 +13,19 @@ router.post('/signup', userController.signup)
 router.post('/login', userController.login)
 router.post('/loginSu', Auth.userAuth, userController.loginSu)
 
+
 router.put('/updatePassword',Auth.userAuth,userController.changePassword)
 
+
+router.post('/addCategory',Auth.userAuth, userController.addCategory)
+router.get('/getAllCategories',Auth.userAuth, userController.getAllCategories)
+router.get('/deleteCategory/:id',Auth.userAuth, userController.deleteCategory)
 
 router.post('/addProduct',Auth.userAuth, userController.addProduct)
 router.get('/getAllProducts',Auth.userAuth, userController.getAllProducts)
 router.put('/editProduct/:id',Auth.userAuth, userController.editProduct)
 router.get('/getProduct/:id',Auth.userAuth, userController.getProduct)
+
 router.put('/stockout/:id',Auth.userAuth, userController.stockout)
 router.put('/addStock/:id',Auth.userAuth, userController.addStock)
 

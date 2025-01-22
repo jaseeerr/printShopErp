@@ -1,5 +1,5 @@
 import React, { useState, useEffect,useRef } from "react";
-import { Edit, Download, X,Eye,EyeOff , Plus, Camera,KeyRound,LogOut,Save, Upload,ChevronDown } from 'lucide-react';
+import { Edit, Download, X,Eye,EyeOff , Plus, Camera,KeyRound,LogOut,Save, Upload,ChevronDown, FileSpreadsheet } from 'lucide-react';
 import MyAxiosInstance from "../../../utils/axios";
 import Modal from "react-modal";
 import ProductForm from "./AddProduct";
@@ -8,15 +8,21 @@ import { IMG_CDN } from "../../../urls/urls";
 import axios from "axios";
 import { QRCodeCanvas } from "qrcode.react";
 import PasswordForm from "./ChangePassword";
+import PasswordFormSu from "./ChangeSuPassword";
 import toast from "react-hot-toast";
+import * as XLSX from 'xlsx';
+
+import CategoryModal from "./addCategory";
 const ProductPage = () => {
   const axiosInstance = MyAxiosInstance();
   const [products, setProducts] = useState([]);
+  const [categories,setCategories] = useState([])
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
   const [isQrScannerModalOpen, setIsQrScannerModalOpen] = useState(false);
   const [isChangePasssword, setIsChangePasssword] = useState(false);
-  
+  const [isChangeSuPasssword, setIsChangeSuPasssword] = useState(false);
+  const [categoryModal,setCategoryModal] = useState(false)
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedProduct, setUpdatedProduct] = useState();
@@ -77,15 +83,26 @@ const handleSubmit = async (e) => {
 };
 
   const qrRef = useRef(null);
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
+
+  useEffect(() => {
+    const filterProducts = () => {
+      const filtered = products.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredProducts(filtered);
+    };
+  
+    filterProducts();
+  }, [products, searchTerm]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await axiosInstance.get("/getAllProducts");
         setProducts(response.data.products);
+        setCategories(response.data.categories)
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -95,6 +112,18 @@ const handleSubmit = async (e) => {
     {
       localStorage.removeItem('superUser')
       location.href='/login'
+    }
+    const x = localStorage.getItem('superUser')
+
+    if(x=='P@$$')
+    {
+      setIsToggled(true)
+    }
+    else
+    {
+      localStorage.removeItem('superUser')
+      setIsToggled(false)
+
     }
     fetchProducts();
   }, []);
@@ -137,7 +166,10 @@ const handleSubmit = async (e) => {
   const closeQrScannerModal = () => setIsQrScannerModalOpen(false);
   const closeChangePassswordModal = () => setIsChangePasssword(false);
   const openChangePassswordModal = () => setIsChangePasssword(true);
-
+  const openChangeSuPassswordModal = () => setIsChangeSuPasssword(true);
+  const closeChangeSuPassswordModal = () => setIsChangeSuPasssword(false);
+  const openCategoryModal = () => setCategoryModal(true);
+  const closeCategoryModal = ()=>setCategoryModal(false)
 
 
   const [isToggled, setIsToggled] = useState(false);
@@ -184,6 +216,43 @@ const handleSubmit = async (e) => {
   };
 
 
+  // filter cat
+  const [visibleProducts, setVisibleProducts] = useState(products);
+  const [selectedCategory, setSelectedCategory] = useState('');
+
+  // Extract unique categories from products
+  // useEffect(() => {
+  //   const uniqueCategories = [...new Set(products.map((product) => product?.category))];
+  //   setCategories(uniqueCategories);
+  // }, [products]);
+
+  // Update displayed products when category changes
+  useEffect(() => {
+    if (selectedCategory) {
+      setFilteredProducts(products.filter(product => product?.category === selectedCategory));
+    } else {
+      setFilteredProducts(products);
+    }
+  }, [selectedCategory]);
+
+  // Export displayed products to Excel
+  const exportToExcel = () => {
+    const exportData = filteredProducts.map(product => ({
+      'Product Name': product.name,
+      'Product Code': product.code || '',
+      'Category': product?.category,
+      'Cost Price (AED)': isToggled ? product.costPrice : 'null',
+      'Selling Price (AED)': product.price.toFixed(2),
+      'Stock': product.stock
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Products');
+
+    XLSX.writeFile(workbook, 'Product_List.xlsx');
+  };
+
 
   return (
     <div className="container mx-auto p-4 bg-white min-h-screen">
@@ -203,7 +272,27 @@ const handleSubmit = async (e) => {
       <span className="ml-3 text-sm font-medium text-gray-700">
         {isToggled ? 'ON' : 'OFF'}
       </span>
+      <br />
+    
     </div>  
+
+
+{isToggled &&
+ <span className="flex justify-center">
+ <button
+       onClick={openChangeSuPassswordModal}
+       className="flex items-center justify-center bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-300"
+       aria-label="Add Product"
+     >
+       <KeyRound size={18} className="mr-2" />
+       Change Super User Password
+     </button>
+ </span>
+
+}
+   
+
+
        <div className="flex space-x-4 justify-center mt-7">
           <button
             onClick={openChangePassswordModal}
@@ -242,8 +331,43 @@ const handleSubmit = async (e) => {
             <Camera size={18} className="mr-2" />
             Scan QR
           </button>
+          <button
+            onClick={openCategoryModal}
+            className="flex items-center justify-center bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-300"
+            aria-label="Add Product"
+          >
+            <Plus size={18} className="mr-2" />
+            Add Category
+          </button>
         </div>
       <h1 className="text-4xl font-bold mb-8 text-black text-center">INVENTORY</h1>
+
+{/* filter category */}
+      <div className="mb-6 flex flex-col sm:flex-row items-center gap-4 justify-center">
+  <select
+    className="p-3 border border-gray-300 rounded-md w-full sm:w-2/3 md:w-1/2 lg:w-1/3 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200 ease-in-out"
+    value={selectedCategory}
+    onChange={(e) => setSelectedCategory(e.target.value)}
+  >
+    <option value="">All Categories</option>
+    {categories.map((category, index) => (
+      <option className="text-gray-800" key={index} value={category?.name}>
+        {category?.name}
+      </option>
+    ))}
+  </select>
+
+  <button
+    onClick={exportToExcel}
+    className="px-6 py-3 bg-gray-800 text-white rounded-md w-full sm:w-auto hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600 transition-all duration-200 ease-in-out"
+  >
+    Export to Excel
+  </button>
+</div>
+
+
+{/* filter category */}
+
 
       <div className="flex flex-col md:flex-row justify-center items-center mb-6 space-y-4 md:space-y-0">
         <div className="w-full md:w-1/3">
@@ -276,7 +400,9 @@ const handleSubmit = async (e) => {
               </a>
               <p className="text-gray-600 mb-2">Product Code: {product?.code}</p>
               <p className="text-gray-600 mb-2">Category: {product?.category}</p>
-              
+              {isToggled &&
+              <p className="text-gray-600 mb-2">Cost Price: AED {product?.costPrice || 0}</p>
+              }
               <p className="text-gray-600 mb-2">Price: AED {product.price.toFixed(2)}</p>
               <p className="text-gray-600 mb-4">Stock: {product.stock}</p>
               <div className="mb-4">
@@ -403,34 +529,36 @@ const handleSubmit = async (e) => {
               <select
                 id="category"
                 name="category"
-                value={updatedProduct.category}
+                value={updatedproduct?.category}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black appearance-none"
                 required
               >
-                <option value="">Select a category</option>
-                <option value="1">Category 1</option>
-                <option value="2">Category 2</option>
-                <option value="3">Category 3</option>
-                <option value="4">Category 4</option>
-                <option value="5">Category 5</option>
+                <option value={updatedproduct?.category}>{updatedproduct?.category}</option>
+                {categories.map((x)=>{
+                   return( <option value={X.name}>{x.name}</option>)
+                })}
+               
+               
               </select>
               <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
             </div>
           </div>
-
-          <div>
-        <label htmlFor="costPrice" className="block text-sm font-medium text-gray-700 mb-1">Cost Price</label>
-        <input
-          type="number"
-          id="costPrice"
-          name="costPrice"
-          value={updatedProduct.costPrice}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black"
-          required
-        />
-      </div>
+             {isToggled && 
+              <div>
+              <label htmlFor="costPrice" className="block text-sm font-medium text-gray-700 mb-1">Cost Price</label>
+              <input
+                type="number"
+                id="costPrice"
+                name="costPrice"
+                value={updatedProduct.costPrice}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black"
+                required
+              />
+            </div>
+             }
+         
 
            <div>
              <label className="block text-sm font-medium text-gray-700 mb-1">Selling Price</label>
@@ -444,7 +572,7 @@ const handleSubmit = async (e) => {
              />
            </div>
  
-           <div>
+           {/* <div>
              <label className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
              <input
                type="number"
@@ -454,7 +582,7 @@ const handleSubmit = async (e) => {
                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black"
                required
              />
-           </div>
+           </div> */}
  
            <div>
              <label className="block text-sm font-medium text-gray-700 mb-1">Product Image</label>
@@ -558,6 +686,56 @@ const handleSubmit = async (e) => {
         <PasswordForm closeModal={closeChangePassswordModal} />
         <button
             onClick={closeChangePassswordModal}
+            className="flex w-full mt-3 font-semibold items-center justify-center bg-gray-200 text-black py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-300"
+            aria-label="Scan QR Code"
+          >
+          Close
+          </button>
+      </Modal>
+
+      <Modal
+        isOpen={isChangeSuPasssword}
+        onRequestClose={openChangeSuPassswordModal}
+        contentLabel="Change Su Password"
+        className="bg-white p-6 rounded-lg shadow-xl max-w-md mx-auto outline-none"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+      >
+        <button
+          onClick={closeChangeSuPassswordModal}
+          className="absolute top-4 right-4 text-black hover:text-gray-700"
+          aria-label="Close modal"
+        >
+          <X size={24} />
+        </button>
+        {/* <h2 className="text-2xl font-bold mb-4 text-black">Scan QR Code</h2> */}
+        <PasswordFormSu closeModal={closeChangeSuPassswordModal} />
+        <button
+            onClick={closeChangeSuPassswordModal}
+            className="flex w-full mt-3 font-semibold items-center justify-center bg-gray-200 text-black py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-300"
+            aria-label="Scan QR Code"
+          >
+          Close
+          </button>
+      </Modal>
+
+      <Modal
+        isOpen={categoryModal}
+        onRequestClose={openCategoryModal}
+        contentLabel="Category Modal"
+        className="bg-white p-6 rounded-lg shadow-xl max-w-md mx-auto outline-none"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+      >
+        <button
+          onClick={closeCategoryModal}
+          className="absolute top-4 right-4 text-black hover:text-gray-700"
+          aria-label="Close modal"
+        >
+          <X size={24} />
+        </button>
+        {/* <h2 className="text-2xl font-bold mb-4 text-black">Scan QR Code</h2> */}
+        <CategoryModal />
+        <button
+            onClick={closeCategoryModal}
             className="flex w-full mt-3 font-semibold items-center justify-center bg-gray-200 text-black py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-300"
             aria-label="Scan QR Code"
           >

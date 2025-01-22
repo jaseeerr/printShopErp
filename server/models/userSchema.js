@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     
   },
+  suAccess:{
+   type:Boolean,
+   default:false
+  },
   block:{
     type:Boolean,
     default:true
