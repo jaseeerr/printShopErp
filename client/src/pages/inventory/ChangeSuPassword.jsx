@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Check, X } from 'lucide-react';
 import MyAxiosInstance from '../../../utils/axios';
+import toast from 'react-hot-toast';
 const PasswordFormSu = () => {
   const axiosInstance = MyAxiosInstance()
   const [password, setPassword] = useState('');
@@ -10,25 +11,28 @@ const PasswordFormSu = () => {
 
   const passwordsMatch = password === repeatPassword && password !== '';
 
-  const handleChangePassword = async()=>{
-    try {
-      const response = await axiosInstance.put('/updatePassword', {
-        newPassword:password,
-        repeatPassword,
-      });
+  const handleChangePassword = async(e)=>{
+    e.preventDefault()
+    toast.error('Feature Not Ready')
+    return
+    // try {
+    //   const response = await axiosInstance.put('/updatePassword', {
+    //     newPassword:password,
+    //     repeatPassword,
+    //   });
   
-      if (response.status === 200) {
-        alert('Password updated successfully');
-      }
-    } catch (error) {
-      if (error.response) {
-        // Handle known errors from the server
-        alert(error.response.data.message);
-      } else {
-        // Handle unexpected errors
-        alert('An error occurred while updating the password');
-      }
-    }
+    //   if (response.status === 200) {
+    //     alert('Password updated successfully');
+    //   }
+    // } catch (error) {
+    //   if (error.response) {
+    //     // Handle known errors from the server
+    //     alert(error.response.data.message);
+    //   } else {
+    //     // Handle unexpected errors
+    //     alert('An error occurred while updating the password');
+    //   }
+    // }
   }
 
   return (

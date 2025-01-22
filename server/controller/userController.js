@@ -49,7 +49,7 @@ module.exports = {
       }
   
       // Generate JWT token
-      const userToken = jwt.sign({ _id: user._id, username: user.username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+      const userToken = jwt.sign({ _id: user._id, username: user.username,block:user.block }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
   
       // Send the token back to the user
       res.json({ success: true, token: userToken });
