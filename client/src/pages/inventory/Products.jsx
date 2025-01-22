@@ -28,6 +28,7 @@ const ProductPage = () => {
   const [updatedProduct, setUpdatedProduct] = useState();
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setImageFile(file);
@@ -529,12 +530,12 @@ const handleSubmit = async (e) => {
               <select
                 id="category"
                 name="category"
-                value={updatedproduct?.category}
+                value={updatedProduct?.category}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black appearance-none"
                 required
               >
-                <option value={updatedproduct?.category}>{updatedproduct?.category}</option>
+                <option value={updatedProduct?.category}>{updatedProduct?.category}</option>
                 {categories.map((x)=>{
                    return( <option value={X.name}>{x.name}</option>)
                 })}
