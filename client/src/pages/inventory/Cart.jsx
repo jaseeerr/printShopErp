@@ -92,7 +92,7 @@ export default function CartPage() {
                 </div>
                 <div className="text-right sm:ml-6">
                   <p className="text-lg font-semibold">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    AED {(item.price * item.quantity).toFixed(2)}
                   </p>
                   <button
                     onClick={() => removeItem(item._id)}
@@ -106,7 +106,7 @@ export default function CartPage() {
           </div>
           <div className="mt-8 flex flex-col sm:flex-row justify-between items-center">
             <p className="text-xl font-semibold mb-4 sm:mb-0">
-              Subtotal: ${subtotal.toFixed(2)}
+              Subtotal: AED {subtotal.toFixed(2)}
             </p>
             <button className="px-6 py-3 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition-colors">
               Proceed to Checkout

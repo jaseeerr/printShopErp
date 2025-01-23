@@ -61,7 +61,7 @@ const QrScanner = ({ closeModal }) => {
 
         if (code) {
             stopScanner();
-            window.open(code.data, '_blank');
+            window.open(code.data, '_self');
             setTimeout(() => {
                 closeModal();
             }, 1000);

@@ -474,7 +474,8 @@ const handleSubmit = async (e) => {
     <div className="absolute bottom-2 right-2 p-2 bg-white border border-gray-200 rounded-lg shadow-md">
       <QRCodeCanvas
         ref={qrRef}
-        value={`http://localhost:5173/view/${product._id}`}
+        // value={`http://localhost:5173/view/${product._id}`}
+        value={`https://notebook.estateconnect.cloud/view/${product._id}`}
         size={80}  // Adjust the size as needed
       />
     </div>
