@@ -8,7 +8,10 @@ const Product = require('../models/productSchema')
 const User = require('../models/userSchema')
 const Category = require('../models/categorySchema')
 const argon2 = require('argon2');
+const Cart = require('../models/cartSchema')
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
+
 module.exports = {
 
 
@@ -49,7 +52,7 @@ module.exports = {
       }
   
       // Generate JWT token
-      const userToken = jwt.sign({ _id: user._id, username: user.username,block:user.block }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+      const userToken = jwt.sign({ _id: user._id, username: user.username,block:user.block }, process.env.ACCESS_TOKEN_SECRET);
   
       // Send the token back to the user
       res.json({ success: true, token: userToken });
@@ -143,6 +146,45 @@ module.exports = {
   
       // Update the password in the database
       user.password = hashedPassword;
+      await user.save();
+  
+      res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  },
+  updateSuPassword:async(req,res)=>{
+    
+    const { newPassword, repeatPassword } = req.body;
+    
+    if (!newPassword || !repeatPassword) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+  
+    // Check if new password matches repeat password
+    if (newPassword !== repeatPassword) {
+      return res.status(400).json({ message: 'New password and repeat password do not match' });
+    }
+  
+    // Validate password length
+    if (newPassword.length < 3) {
+      return res.status(400).json({ message: 'Password must be at least 3 characters' });
+    }
+  
+    try {
+      // Find the user by ID from req.user._id
+      const user = await User.findById(req.user._id);
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      // Hash the new password
+      const hashedPassword = await argon2.hash(newPassword);
+  
+      // Update the password in the database
+      user.suPassword = hashedPassword;
       await user.save();
   
       res.status(200).json({ message: 'Password updated successfully' });
@@ -532,12 +574,18 @@ module.exports = {
         if (!name || !price || !stock) {
           return res.status(400).json({ message: "Name, price, and stock are required" });
         }
+
+        const stockInEntry = {
+          quantity:stock,
+          timestamp: new Date(), // Current timestamp when the stock is added
+        };
     
         // Create a new product instance
         const newProduct = new Product({
           name,
           code,
           category,
+          history:[stockInEntry],
           costPrice,
           price,
           stock,
@@ -646,6 +694,21 @@ module.exports = {
         res.status(500).json({ message: 'Failed to update product', error: error.message });
       }
     },
+    deleteProduct:async(req,res)=>{
+      try {
+        const { id } = req.params;
+        const deletedProduct = await Product.findByIdAndDelete(id);
+    
+        if (!deletedProduct) {
+          return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+    
+        res.status(200).json({ success: true, message: 'Product deleted successfully' });
+      } catch (error) {
+        console.error('Error deleting product:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+      }
+    },
     getProduct:async(req,res)=>{
       try {
         const product = await Product.findById(req.params.id); // Find the product by ID
@@ -726,6 +789,118 @@ module.exports = {
       } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error", error: err.message });
+      }
+    },
+    addToCart:async(req,res)=>{
+      try {
+        const {  pid, code } = req.body;
+     
+        const owner = req.user._id
+        if (!owner || !pid || !code) {
+          return res.status(400).json({ message: 'Owner, Product ID, and Code are required' });
+        }
+    
+        let cart = await Cart.findOne({ owner });
+    
+        if (!cart) {
+          cart = new Cart({ owner, products: [] });
+        }
+    
+        // Check if product already exists
+        const productExists = cart.products.some(product => product.pid === pid);
+        if (productExists) {
+          return res.status(400).json({ message: 'Product already in cart' });
+        }
+    
+        // Add new product
+        cart.products.push({ pid, code,quantity:1 });
+        await cart.save();
+    
+        res.status(200).json({ message: 'Product added to cart', cart });
+      } catch (error) {
+        res.status(500).json({ message: 'Error adding product', error: error.message });
+      }
+    },
+    removeProduct:async(req,res)=>{
+      try {
+        const { owner, identifier } = req.body; // identifier can be pid or code
+    
+        if (!owner || !identifier) {
+          return res.status(400).json({ message: 'Owner and product identifier (pid or code) are required' });
+        }
+    
+        const cart = await Cart.findOne({ owner });
+    
+        if (!cart) {
+          return res.status(404).json({ message: 'Cart not found' });
+        }
+    
+        const initialLength = cart.products.length;
+    
+        // Remove product based on pid or code
+        cart.products = cart.products.filter(
+          product => product.pid !== identifier && product.code !== identifier
+        );
+    
+        if (cart.products.length === initialLength) {
+          return res.status(404).json({ message: 'Product not found in cart' });
+        }
+    
+        await cart.save();
+    
+        res.status(200).json({ message: 'Product removed successfully', cart });
+      } catch (error) {
+        res.status(500).json({ message: 'Error removing product', error: error.message });
+      }
+    },
+    getCart:async(req,res)=>{
+      try {
+        // const { owner } = req.body;
+        const owner = req.user._id
+        console.log(owner)
+    
+        if (!owner) {
+          return res.status(400).json({ message: 'Owner ID is required' });
+        }
+    
+        // Find the cart by owner ID
+        const cart = await Cart.findOne({ owner });
+    
+        if (!cart) {
+          return res.status(404).json({ message: 'Cart not found' });
+        }
+    
+        const productObjectIds = cart.products.map(product => new mongoose.Types.ObjectId(product.pid));
+    
+        // Fetch product details from Product collection, excluding costPrice
+        const products = [];
+
+        for (const id of productObjectIds) {
+          const product = await Product.findById(id, { costPrice: 0, __v: 0 }); // Exclude costPrice and __v
+          if (product) {
+            products.push(product);
+          }
+        }
+        console.log(products)
+    
+        // Merge product details with quantity from cart
+        const cartProducts = cart.products.map(cartItem => {
+          console.log(cartItem)
+          const productDetail = products.find(p => p._id == cartItem.pid);
+          if (productDetail) {
+            return {
+              ...productDetail.toObject(),
+              quantity: cartItem.quantity
+            };
+          }
+          return null;
+        }).filter(item => item !== null); // Remove null values if any product was not found
+    
+        console.log(cartProducts)
+        res.status(200).json({ message: 'Cart products retrieved successfully', products: cartProducts });
+      } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: 'Error fetching cart products', error: error.message });
       }
     }
     

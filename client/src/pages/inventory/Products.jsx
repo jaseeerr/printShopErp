@@ -1,5 +1,5 @@
 import React, { useState, useEffect,useRef } from "react";
-import { Edit, Download, X,Eye,EyeOff , Plus, Camera,KeyRound,LogOut,Save, Upload,ChevronDown, FileSpreadsheet } from 'lucide-react';
+import { Edit, Download, X,Eye,EyeOff , Plus, Camera,KeyRound,LogOut,Save, Upload,ChevronDown, FileSpreadsheet,Trash, ShoppingCart } from 'lucide-react';
 import MyAxiosInstance from "../../../utils/axios";
 import Modal from "react-modal";
 import ProductForm from "./AddProduct";
@@ -90,7 +90,8 @@ const handleSubmit = async (e) => {
   useEffect(() => {
     const filterProducts = () => {
       const filtered = products.filter((product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.code.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredProducts(filtered);
     };
@@ -254,6 +255,64 @@ const handleSubmit = async (e) => {
     XLSX.writeFile(workbook, 'Product_List.xlsx');
   };
 
+  const deleteProduct = async(id)=>{
+    // Ask for confirmation before deleting the product
+    const isConfirmed = window.confirm('Are you sure you want to delete this product?');
+  
+    if (!isConfirmed) {
+      toast.loading('Product deletion cancelled', { duration: 1000 });
+      return;
+    }
+  
+    try {
+      // Show loading message
+      toast.loading('Deleting product...', { duration: 1000 });
+  
+      // Send DELETE request to the server
+      const res = await axiosInstance.delete(`/deleteProduct/${id}`);
+  
+      if (res.data.success) {
+        // Show success message
+        toast.success('Product deleted successfully!', { duration: 1000 });
+        setTimeout(()=>{
+             location.reload()
+        },600)
+      } else {
+        // Show error message if the server response does not indicate success
+        toast.error(res.data.message || 'Failed to delete the product', { duration: 1000 });
+      }
+    } catch (error) {
+      // Handle different types of errors
+      if (error.response) {
+        toast.error(`Error: ${error.response.data.message || 'Failed to delete product'}`, { duration: 2000 });
+      } else if (error.request) {
+        toast.error('No response from the server. Please try again later.', { duration: 2000 });
+      } else {
+        toast.error(`An error occurred: ${error.message}`, { duration: 2000 });
+      }
+    }
+  }
+
+  const addToCart = async(product) => {
+    try {
+      const response = await axiosInstance.post('/addToCart', {
+        pid: product._id,
+        code:product.code,
+        
+      });
+  
+      if (response.status === 200) {
+        toast.success('Product added to cart successfully!');
+        return response.data;
+      } else {
+        throw new Error('Failed to add product to cart');
+      }
+    } catch (error) {
+      toast.error(`Error adding product to cart: ${error.response?.data?.message || error.message}`);
+      return null;
+    }
+  };
+
 
   return (
     <div className="container mx-auto p-4 bg-white min-h-screen">
@@ -308,7 +367,7 @@ const handleSubmit = async (e) => {
               localStorage.removeItem('userToken')
               location.href='/login'
             }}
-            className="flex items-center justify-center bg-gray-200 text-black py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-300"
+            className="flex items-center justify-center bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-300"
             aria-label="Scan QR Code"
           >
             <LogOut size={18} className="mr-2" />
@@ -340,6 +399,17 @@ const handleSubmit = async (e) => {
             <Plus size={18} className="mr-2" />
             Add Category
           </button>
+        </div>
+
+        <div className="flex justify-center">
+        <a
+           href="/cart"
+           className="flex items-center justify-center bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-300"
+           aria-label="Scan QR Code"
+          >
+            <ShoppingCart size={18} className="mr-2" />
+            View Cart
+          </a>
         </div>
       <h1 className="text-4xl font-bold mb-8 text-black text-center">INVENTORY</h1>
 
@@ -374,7 +444,7 @@ const handleSubmit = async (e) => {
         <div className="w-full md:w-1/3">
           <input
             type="text"
-            placeholder="Search products by name..."
+            placeholder="Product Name / Code"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
@@ -390,11 +460,25 @@ const handleSubmit = async (e) => {
             key={product._id}
             className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105 border border-gray-200"
           >
-            <img
+            {/* <img
               src={product.image || "/placeholder.svg"}
               alt={product.name}
               className="w-full h-64 object-cover"
-            />
+            /> */}
+             <div className="relative">
+    <img
+      src={product.image || "/placeholder.svg"}
+      alt={product.name}
+      className="w-full h-80 object-cover"
+    />
+    <div className="absolute bottom-2 right-2 p-2 bg-white border border-gray-200 rounded-lg shadow-md">
+      <QRCodeCanvas
+        ref={qrRef}
+        value={`http://localhost:5173/view/${product._id}`}
+        size={80}  // Adjust the size as needed
+      />
+    </div>
+  </div>
             <div className="p-6">
               <a href={`/view/${product._id}`} className="block mb-2">
                 <h2 className="text-2xl font-semibold text-black hover:underline">{product.name}</h2>
@@ -406,14 +490,7 @@ const handleSubmit = async (e) => {
               }
               <p className="text-gray-600 mb-2">Price: AED {product.price.toFixed(2)}</p>
               <p className="text-gray-600 mb-4">Stock: {product.stock}</p>
-              <div className="mb-4">
-                <QRCodeCanvas
-                ref={qrRef}
-                  value={`https://notebook.estateconnect.cloud/view/${product._id}`}
-                  className="p-2 bg-white border border-gray-200 rounded"
-                  size={100}
-                />
-              </div>
+             
               <div className="flex justify-between">
                 <button
                 onClick={()=>{
@@ -426,6 +503,11 @@ const handleSubmit = async (e) => {
                   <Edit size={18} className="mr-2" />
                   Edit
                 </button>
+
+              
+              
+
+
                 <button
                 onClick={downloadQRCode}
                   className="flex items-center justify-center bg-gray-200 text-black py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-300"
@@ -434,7 +516,32 @@ const handleSubmit = async (e) => {
                   <Download size={18} className="mr-2" />
                   QR Code
                 </button>
+
+                <button
+                onClick={()=>{
+                  deleteProduct(product._id)
+                }}
+                  className="flex items-center justify-center bg-gray-800 text-white py-2 px-3 rounded-lg hover:bg-black transition-colors duration-300"
+                  aria-label={`Edit ${product.name}`}
+                >
+                  <Trash size={18} className="mr-2" />
+                  Delete
+                </button>
               </div>
+              <div className="flex justify-center mt-2">
+              <button
+      type="button"
+      onClick={()=>{
+        addToCart(product)
+      }}
+      className="px-4 py-2 bg-gray-800 w-full text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600 transition-all duration-200 ease-in-out flex items-center justify-center"
+    >
+      <ShoppingCart className="w-4 h-4 mr-2" />
+      Add to Cart
+    </button>
+              </div>
+
+
             </div>
           </div>
         ))}

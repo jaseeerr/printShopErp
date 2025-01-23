@@ -32,7 +32,7 @@ const MyAxiosInstance = (opt) => {
       
       if(response.data.blocked && localStorage.getItem('userToken'))
       {
-       
+       alert('Inavlid Token Found')
         localStorage.removeItem('userToken')
         location.href = "/login"
       }

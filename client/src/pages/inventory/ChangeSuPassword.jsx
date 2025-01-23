@@ -13,26 +13,26 @@ const PasswordFormSu = () => {
 
   const handleChangePassword = async(e)=>{
     e.preventDefault()
-    toast.error('Feature Not Ready')
-    return
-    // try {
-    //   const response = await axiosInstance.put('/updatePassword', {
-    //     newPassword:password,
-    //     repeatPassword,
-    //   });
+   
+    try {
+      const response = await axiosInstance.put('/updateSuPassword', {
+        newPassword:password,
+        repeatPassword,
+      });
   
-    //   if (response.status === 200) {
-    //     alert('Password updated successfully');
-    //   }
-    // } catch (error) {
-    //   if (error.response) {
-    //     // Handle known errors from the server
-    //     alert(error.response.data.message);
-    //   } else {
-    //     // Handle unexpected errors
-    //     alert('An error occurred while updating the password');
-    //   }
-    // }
+      if (response.status === 200) {
+        alert('Password updated successfully');
+        location.reload()
+      }
+    } catch (error) {
+      if (error.response) {
+        // Handle known errors from the server
+        alert(error.response.data.message);
+      } else {
+        // Handle unexpected errors
+        alert('An error occurred while updating the password');
+      }
+    }
   }
 
   return (

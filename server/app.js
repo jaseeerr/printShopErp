@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(
   cors({
     origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'PATCH'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH','DELETE'],
     // credentials: true,
   })
 ); 

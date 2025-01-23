@@ -23,6 +23,7 @@ import ProductPage from './pages/inventory/Products';
 import ViewProduct from './pages/inventory/ViewProduct';
 import Login from './pages/loginSignup/Login';
 import SignUp from './pages/loginSignup/Signup';
+import CartPage from './pages/inventory/Cart';
 
 function App() {
     const [data, setData] = useState([]);
@@ -43,6 +44,7 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<SignUp />} />
                     <Route path="/view/:id" element={<ViewProduct />} />
+                    <Route path="/cart" element={<CartPage />} />
                     {/* <Route path="/products" element={<ProductPage />} /> */}
                     {/* <Route path="/qr" element={<QRCodeGenerator />} />
                     <Route path="/addProduct" element={<ProductForm />} /> */}

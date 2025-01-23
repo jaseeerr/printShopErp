@@ -15,6 +15,12 @@ router.post('/loginSu', Auth.userAuth, userController.loginSu)
 
 
 router.put('/updatePassword',Auth.userAuth,userController.changePassword)
+router.put('/updateSuPassword',Auth.userAuth,userController.updateSuPassword)
+
+router.post('/addToCart',Auth.userAuth, userController.addToCart)
+router.post('/removeProduct',Auth.userAuth, userController.removeProduct)
+router.get('/getCart',Auth.userAuth, userController.getCart)
+
 
 
 router.post('/addCategory',Auth.userAuth, userController.addCategory)
@@ -22,8 +28,11 @@ router.get('/getAllCategories',Auth.userAuth, userController.getAllCategories)
 router.get('/deleteCategory/:id',Auth.userAuth, userController.deleteCategory)
 
 router.post('/addProduct',Auth.userAuth, userController.addProduct)
-router.get('/getAllProducts',Auth.userAuth, userController.getAllProducts)
 router.put('/editProduct/:id',Auth.userAuth, userController.editProduct)
+router.delete('/deleteProduct/:id',Auth.userAuth, userController.deleteProduct)
+
+
+router.get('/getAllProducts',Auth.userAuth, userController.getAllProducts)
 router.get('/getProduct/:id',Auth.userAuth, userController.getProduct)
 
 router.put('/stockout/:id',Auth.userAuth, userController.stockout)
