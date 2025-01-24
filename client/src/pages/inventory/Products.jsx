@@ -603,7 +603,7 @@ const handleSubmit = async (e) => {
 
       {isModalOpen && (
        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md overflow-auto h-[80vh]">
          <h2 className="text-2xl font-semibold mb-6 text-black">Update Product</h2>
          <form onSubmit={handleSubmit} className="space-y-6">
 
@@ -616,7 +616,7 @@ const handleSubmit = async (e) => {
           value={updatedProduct.code}
           onChange={handleChange}
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black"
-          required
+          
         />
       </div>
 
@@ -641,7 +641,7 @@ const handleSubmit = async (e) => {
                 value={updatedProduct?.category}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black appearance-none"
-                required
+                
               >
                 <option value={updatedProduct?.category}>{updatedProduct?.category}</option>
                 {categories.map((x)=>{
@@ -663,7 +663,7 @@ const handleSubmit = async (e) => {
                 value={updatedProduct.costPrice}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black"
-                required
+                
               />
             </div>
              }
@@ -677,7 +677,7 @@ const handleSubmit = async (e) => {
                value={updatedProduct.price}
                onChange={handleChange}
                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black"
-               required
+               
              />
            </div>
  
@@ -745,7 +745,7 @@ const handleSubmit = async (e) => {
         isOpen={isAddProductModalOpen}
         onRequestClose={closeAddProductModal}
         contentLabel="Add Product"
-        className="bg-white p-6 rounded-lg shadow-xl max-w-md mx-auto mt-2 outline-none"
+        className="bg-white p-6 rounded-lg shadow-xl w-1/3 h-[80vh] mx-auto mt-2 outline-none"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
       >
         <button

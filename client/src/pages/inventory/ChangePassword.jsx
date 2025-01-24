@@ -36,6 +36,30 @@ const PasswordForm = () => {
       <form onSubmit={handleChangePassword} className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Change Password</h2>
         
+
+        <div className="mb-6">
+          <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-700">
+            Current Password
+          </label>
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-600 hover:text-gray-800"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+        </div>
+
         <div className="mb-6">
           <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-700">
             Password

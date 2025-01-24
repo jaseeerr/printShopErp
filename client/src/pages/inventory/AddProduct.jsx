@@ -74,20 +74,35 @@ const ProductForm = ({ closeModal }) => {
     setFormData({ ...formData, [name]: value });
   };
   
+  const [su,setSu] = useState(false)
 
    useEffect(() => {
       const fetchCat = async () => {
         const res = await axiosInstance.get("/getAllCategories")
         setCategories(res.data.categories.reverse())
       }
+
+      const x = localStorage.getItem('superUser')
+
+    if(x=='P@$$')
+    {
+      setSu(true)
+    }
+    else
+    {
+      setSu(false)
+    }
   
       fetchCat()
+
     }, [])
+
+   
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md overflow-auto h-96"
+      className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md overflow-auto h-[65vh]"
     >
       {/* <h2 className="text-2xl font-bold mb-6 text-black text-center">
         Add Product
@@ -107,7 +122,7 @@ const ProductForm = ({ closeModal }) => {
           value={formData.code}
           onChange={handleChange}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
-          required
+          
         />
       </div>
 
@@ -144,7 +159,7 @@ const ProductForm = ({ closeModal }) => {
             value={formData.category}
             onChange={handleChange}
             className="w-full px-4 overflow-auto py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black appearance-none"
-            required
+            
           >
             <option value="">Select a category</option>
             {categories.map((x)=>{
@@ -156,23 +171,26 @@ const ProductForm = ({ closeModal }) => {
       </div>
 
 
-      <div className="mb-4">
-        <label
-          htmlFor="costPrice"
-          className="block text-gray-700 font-medium mb-1"
-        >
-          Cost Price
-        </label>
-        <input
-          type="number"
-          id="costPrice"
-          name="costPrice"
-          value={formData.costPrice}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
-          required
-        />
-      </div>
+{su &&
+ <div className="mb-4">
+ <label
+   htmlFor="costPrice"
+   className="block text-gray-700 font-medium mb-1"
+ >
+   Cost Price
+ </label>
+ <input
+   type="number"
+   id="costPrice"
+   name="costPrice"
+   value={formData.costPrice}
+   onChange={handleChange}
+   className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
+   
+ />
+</div>
+}
+     
 
       <div className="mb-4">
         <label
@@ -188,7 +206,7 @@ const ProductForm = ({ closeModal }) => {
           value={formData.price}
           onChange={handleChange}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
-          required
+          
         />
       </div>
 
@@ -206,7 +224,7 @@ const ProductForm = ({ closeModal }) => {
           value={formData.stock}
           onChange={handleChange}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
-          required
+          
         />
       </div>
 
