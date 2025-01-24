@@ -18,6 +18,8 @@ router.put('/updatePassword',Auth.userAuth,userController.changePassword)
 router.put('/updateSuPassword',Auth.userAuth,userController.updateSuPassword)
 
 router.post('/addToCart',Auth.userAuth, userController.addToCart)
+router.put('/updateCartQuantity',Auth.userAuth, userController.updateCartQuantity)
+
 router.post('/removeProduct',Auth.userAuth, userController.removeProduct)
 router.get('/getCart',Auth.userAuth, userController.getCart)
 

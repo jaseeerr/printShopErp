@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { PackageIcon,ArrowUpIcon,ArrowDownIcon,ShoppingCartIcon } from "lucide-react"
+import toast from "react-hot-toast";
 import MyAxiosInstance from '../../../utils/axios';
 import { useParams } from 'react-router-dom';
 
@@ -25,6 +27,26 @@ const ViewProduct = () => {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const addToCart = async(product) => {
+    try {
+      const response = await axiosInstance.post('/addToCart', {
+        pid: product._id,
+        code:product.code,
+        
+      });
+  
+      if (response.status === 200) {
+        toast.success('Product added to cart successfully!');
+        return response.data;
+      } else {
+        throw new Error('Failed to add product to cart');
+      }
+    } catch (error) {
+      toast.error(`Error adding product to cart: ${error.response?.data?.message || error.message}`);
+      return null;
     }
   };
 
@@ -80,48 +102,126 @@ const ViewProduct = () => {
       {product ? (
         <div>
           {/* Product Card */}
-          <div className="max-w-sm mx-auto bg-white shadow-lg rounded-lg overflow-hidden border border-gray-400">
-            <img
-              src={product.image || "https://via.placeholder.com/300"}
-              alt={product.name}
-              className="w-full h-full object-cover border border-gray-400"
-            />
-            <div className="p-4">
-              <h2 className="text-2xl font-bold text-gray-800">{product.name}</h2>
-              <p className="text-xl text-gray-500 mt-2">AED {product.price}</p>
-              <p className="text-gray-600 mt-4">{product.stock} in stock</p>
-              <div className="mt-6 flex justify-between">
-                <button
-                  onClick={() => setModalOpen(true)}
-                  className="bg-red-500 text-white py-2 px-4 rounded"
-                >
-                  Stock Out
-                </button>
-                <button
-                  onClick={() => setAddStockModalOpen(true)}
-                  className="bg-green-500 text-white py-2 px-4 rounded"
-                >
-                  Add Stock
-                </button>
-              </div>
-            </div>
+          <div className="max-w-lg mx-auto bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 ease-in-out border border-gray-200">
+      <div className="md:flex">
+        <div className="md:shrink-0">
+          <img
+            src={product?.image || "https://via.placeholder.com/300"}
+            alt={product?.name}
+            className="h-48 w-full object-cover md:h-full md:w-56"
+          />
+        </div>
+        <div className="p-6">
+          <div className="uppercase tracking-wide text-sm text-gray-600 font-semibold">{product?.category}</div>
+          <h2 className="block mt-1 text-lg leading-tight font-medium text-black">{product?.name}</h2>
+          <p className="mt-2 text-gray-500">Code: {product?.code}</p>
+          <p className="mt-2 text-2xl font-bold text-gray-900">AED {product?.price.toFixed(2)}</p>
+
+          <div className="mt-4 flex items-center text-gray-700">
+            <PackageIcon className="h-5 w-5 mr-2" />
+            <span>{product?.stock} in stock</span>
           </div>
 
-          {/* History Card with Scrollable List */}
-          <div className="mt-6 max-w-sm mx-auto bg-white shadow-lg rounded-lg overflow-hidden border border-gray-400">
-            <div className="p-4">
-              <h3 className="text-xl font-semibold text-gray-800">Stock History</h3>
-              <div className="mt-4 h-64 overflow-y-auto">
-                <ul className="list-disc pl-5 text-gray-600">
-                  {product.history.map((item, index) => (
-                    <li key={index}>
-                      {item.quantity} units {item.invoiceNumber ? `sold (Invoice: ${item.invoiceNumber})` : `added`} on {new Date(item.timestamp).toLocaleString()}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+          <div className="mt-6 flex justify-between space-x-4">
+            <button
+              onClick={() => setModalOpen(true)}
+              className="flex-1 bg-gray-800 hover:bg-gray-900 text-white py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+            >
+              Stock Out
+            </button>
+            <button
+              onClick={() => setAddStockModalOpen(true)}
+              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50"
+            >
+              Add Stock
+            </button>
+            
           </div>
+
+          <div className="mt-4">
+            <button
+              onClick={()=>{
+                addToCart(product)
+              }}
+              className="w-full bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 flex items-center justify-center"
+            >
+              <ShoppingCartIcon className="h-5 w-5 mr-2" />
+              Add to Cart
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+          {/* History Card with Scrollable List */}
+          <div className="mt-6 max-w-lg mx-auto bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
+      <div className="p-4">
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">Stock History</h3>
+        <div className="mt-4 h-64 overflow-y-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Date
+                </th>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Action
+                </th>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Quantity
+                </th>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Invoice
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {[...product.history].reverse().map((item, index) => (
+                <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {new Date(item.timestamp).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        item.invoiceNumber ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                      }`}
+                    >
+                      {item.invoiceNumber ? (
+                        <>
+                          <ArrowDownIcon className="mr-1 h-3 w-3" />
+                          Sold
+                        </>
+                      ) : (
+                        <>
+                          <ArrowUpIcon className="mr-1 h-3 w-3" />
+                          Added
+                        </>
+                      )}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.quantity}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.invoiceNumber || "-"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
         </div>
       ) : (

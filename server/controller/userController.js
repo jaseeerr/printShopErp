@@ -117,8 +117,12 @@ module.exports = {
   },
   changePassword:async(req,res)=>{
     
-    const { newPassword, repeatPassword } = req.body;
+    const { newPassword, repeatPassword, currentPassword } = req.body;
     
+    if (!currentPassword) {
+      return res.status(400).json({ message: 'Current password is required' });
+  }
+
     if (!newPassword || !repeatPassword) {
       return res.status(400).json({ message: 'All fields are required' });
     }
@@ -129,13 +133,19 @@ module.exports = {
     }
   
     // Validate password length
-    if (newPassword.length < 6) {
-      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    if (newPassword.length < 4) {
+      return res.status(400).json({ message: 'Password must be at least 4 characters' });
     }
   
     try {
       // Find the user by ID from req.user._id
       const user = await User.findById(req.user._id);
+
+       // Check if the current password matches the stored password
+       const isMatch = await argon2.verify(user.password, currentPassword);
+       if (!isMatch) {
+           return res.status(400).json({ message: 'Current password is incorrect' });
+       }
   
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
@@ -821,6 +831,41 @@ module.exports = {
         res.status(500).json({ message: 'Error adding product', error: error.message });
       }
     },
+    updateCartQuantity:async(req,res)=>{
+      const {pid, quantity } = req.body;
+      const owner = req.user._id
+      // Validate input
+      if (!owner || !pid || quantity === undefined || quantity <= 0) {
+          return res.status(400).json({ message: 'Invalid input, ensure owner, pid, and quantity are provided and valid.' });
+      }
+  
+      try {
+          // Find the cart by owner
+          const cart = await Cart.findOne({ owner });
+  
+          if (!cart) {
+              return res.status(404).json({ message: 'Cart not found for the specified owner' });
+          }
+  
+          // Find the product by pid in the products array
+          const productIndex = cart.products.findIndex(product => product.pid === pid);
+  
+          if (productIndex === -1) {
+              return res.status(404).json({ message: 'Product not found in the cart' });
+          }
+  
+          // Update the quantity of the product
+          cart.products[productIndex].quantity = quantity;
+  
+          // Save the updated cart
+          await cart.save();
+  
+          res.status(200).json({ message: 'Quantity updated successfully', cart });
+      } catch (error) {
+          console.error(error);
+          res.status(500).json({ message: 'Server error' });
+      }
+  },
     removeProduct:async(req,res)=>{
       try {
         const { owner, identifier } = req.body; // identifier can be pid or code
@@ -857,7 +902,7 @@ module.exports = {
       try {
         // const { owner } = req.body;
         const owner = req.user._id
-        console.log(owner)
+        // console.log(owner)
     
         if (!owner) {
           return res.status(400).json({ message: 'Owner ID is required' });
@@ -881,11 +926,11 @@ module.exports = {
             products.push(product);
           }
         }
-        console.log(products)
+        // console.log(products)
     
         // Merge product details with quantity from cart
         const cartProducts = cart.products.map(cartItem => {
-          console.log(cartItem)
+          // console.log(cartItem)
           const productDetail = products.find(p => p._id == cartItem.pid);
           if (productDetail) {
             return {
@@ -896,7 +941,7 @@ module.exports = {
           return null;
         }).filter(item => item !== null); // Remove null values if any product was not found
     
-        console.log(cartProducts)
+        // console.log(cartProducts)
         res.status(200).json({ message: 'Cart products retrieved successfully', products: cartProducts });
       } catch (error) {
         console.log(error)

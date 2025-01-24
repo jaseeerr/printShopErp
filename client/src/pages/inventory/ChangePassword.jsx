@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Check, X } from 'lucide-react';
+import { Eye, EyeOff, Check, X, UserPen } from 'lucide-react';
 import MyAxiosInstance from '../../../utils/axios';
 const PasswordForm = () => {
   const axiosInstance = MyAxiosInstance()
@@ -7,12 +7,16 @@ const PasswordForm = () => {
   const [repeatPassword, setRepeatPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showRepeatPassword, setShowRepeatPassword] = useState(false);
+  const [showCurrentPassword,setShowCurrentPassword] = useState(false)
 
+  const [currentPassword,setCurrentPassword] = useState('')
   const passwordsMatch = password === repeatPassword && password !== '';
 
-  const handleChangePassword = async()=>{
+  const handleChangePassword = async(e)=>{
+    e.preventDefault()
     try {
       const response = await axiosInstance.put('/updatePassword', {
+        currentPassword,
         newPassword:password,
         repeatPassword,
       });
@@ -38,24 +42,24 @@ const PasswordForm = () => {
         
 
         <div className="mb-6">
-          <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-700">
+          <label htmlFor="currentPassword" className="block mb-2 text-sm font-medium text-gray-700">
             Current Password
           </label>
           <div className="relative">
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showCurrentPassword ? 'text' : 'password'}
               id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
               required
             />
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)}
+              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
               className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-600 hover:text-gray-800"
             >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              {showCurrentPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
         </div>
