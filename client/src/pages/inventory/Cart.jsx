@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react"
 import MyAxiosInstance from "../../../utils/axios"
+import InvoiceQuotation from "./QuoteInvoice"
 
 export default function CartPage() {
   const axiosInstance = MyAxiosInstance()
@@ -26,6 +27,14 @@ export default function CartPage() {
       setLoading(false)
     }
 
+    if(!localStorage.getItem('userToken'))
+      {
+        localStorage.removeItem('userToken')
+        localStorage.removeItem('superUser')
+        location.href='/login'
+      }
+
+
     loadCartData()
   }, [])
 
@@ -42,7 +51,8 @@ export default function CartPage() {
       });
 
       console.log('Response:', response.data);
-      
+      setSpinner(false)
+
       return response.data; // Return the response data if needed
   } catch (error) {
       if (error.response) {
@@ -66,14 +76,17 @@ export default function CartPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-8">Your Cart 
+     <span className="flex w-full">
+     <h1 className="text-2xl font-bold mb-8">Your Cart 
         {/* <span className="w-10 h-10"> */}
-        {spinner &&
-                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="4" width="6" height="14" opacity="1"><animate id="spinner_aqiq" begin="0;spinner_xVBj.end-0.25s" attributeName="y" dur="0.75s" values="1;5" fill="freeze"/><animate begin="0;spinner_xVBj.end-0.25s" attributeName="height" dur="0.75s" values="22;14" fill="freeze"/><animate begin="0;spinner_xVBj.end-0.25s" attributeName="opacity" dur="0.75s" values="1;.2" fill="freeze"/></rect><rect x="9" y="4" width="6" height="14" opacity=".4"><animate begin="spinner_aqiq.begin+0.15s" attributeName="y" dur="0.75s" values="1;5" fill="freeze"/><animate begin="spinner_aqiq.begin+0.15s" attributeName="height" dur="0.75s" values="22;14" fill="freeze"/><animate begin="spinner_aqiq.begin+0.15s" attributeName="opacity" dur="0.75s" values="1;.2" fill="freeze"/></rect><rect x="17" y="4" width="6" height="14" opacity=".3"><animate id="spinner_xVBj" begin="spinner_aqiq.begin+0.3s" attributeName="y" dur="0.75s" values="1;5" fill="freeze"/><animate begin="spinner_aqiq.begin+0.3s" attributeName="height" dur="0.75s" values="22;14" fill="freeze"/><animate begin="spinner_aqiq.begin+0.3s" attributeName="opacity" dur="0.75s" values="1;.2" fill="freeze"/></rect></svg>        
-
-        }
+      
         {/* </span> */}
       </h1>
+      {spinner &&
+                <svg width="24" className="mt-2 ml-3" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="4" width="6" height="14" opacity="1"><animate id="spinner_aqiq" begin="0;spinner_xVBj.end-0.25s" attributeName="y" dur="0.75s" values="1;5" fill="freeze"/><animate begin="0;spinner_xVBj.end-0.25s" attributeName="height" dur="0.75s" values="22;14" fill="freeze"/><animate begin="0;spinner_xVBj.end-0.25s" attributeName="opacity" dur="0.75s" values="1;.2" fill="freeze"/></rect><rect x="9" y="4" width="6" height="14" opacity=".4"><animate begin="spinner_aqiq.begin+0.15s" attributeName="y" dur="0.75s" values="1;5" fill="freeze"/><animate begin="spinner_aqiq.begin+0.15s" attributeName="height" dur="0.75s" values="22;14" fill="freeze"/><animate begin="spinner_aqiq.begin+0.15s" attributeName="opacity" dur="0.75s" values="1;.2" fill="freeze"/></rect><rect x="17" y="4" width="6" height="14" opacity=".3"><animate id="spinner_xVBj" begin="spinner_aqiq.begin+0.3s" attributeName="y" dur="0.75s" values="1;5" fill="freeze"/><animate begin="spinner_aqiq.begin+0.3s" attributeName="height" dur="0.75s" values="22;14" fill="freeze"/><animate begin="spinner_aqiq.begin+0.3s" attributeName="opacity" dur="0.75s" values="1;.2" fill="freeze"/></rect></svg>        
+}
+        
+     </span>
 
       {loading ? (
         <div className="text-center py-8">
@@ -132,14 +145,22 @@ export default function CartPage() {
               </div>
             ))}
           </div>
-          <div className="mt-8 flex flex-col sm:flex-row justify-between items-center">
-            <p className="text-xl font-semibold mb-4 sm:mb-0">Subtotal: AED {subtotal.toFixed(2)}</p>
-            <button className="px-6 py-3 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition-colors">
-              Proceed to Checkout
-            </button>
-          </div>
+          <div className="mt-8 flex flex-col justify-center items-center">
+  <div className="flex flex-col sm:flex-row items-center mb-4 sm:mb-0">
+    <p className="text-xl font-semibold">Subtotal: AED {subtotal.toFixed(2)}</p>
+    <p className="text-sm text-gray-600 ml-4">(+5% VAT)</p>
+  </div>
+  <p className="text-xl font-semibold mt-4">Total: AED {(subtotal * 1.05).toFixed(2)}</p>
+</div>
+
+
+
+
         </>
       )}
+
+
+      <InvoiceQuotation data={items}/>
     </div>
   )
 }

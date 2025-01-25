@@ -86,6 +86,13 @@ const ViewProduct = () => {
   };
 
   useEffect(() => {
+    if(!localStorage.getItem('userToken'))
+      {
+        localStorage.removeItem('userToken')
+        localStorage.removeItem('superUser')
+        location.href='/login'
+      }
+
     fetchProductDetails();
   }, [id]);
 
