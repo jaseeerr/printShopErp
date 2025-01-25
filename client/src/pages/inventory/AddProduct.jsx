@@ -6,6 +6,7 @@ import { Upload, X ,ChevronDown } from 'lucide-react';
 
 const ProductForm = ({ closeModal }) => {
   const axiosInstance = MyAxiosInstance();
+
   const [categories,setCategories] = useState([])
   const [formData, setFormData] = useState({
     name: "",
@@ -16,6 +17,22 @@ const ProductForm = ({ closeModal }) => {
 
   const [imageFile, setImageFile] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
+
+  const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+
+  const handleCategorySelect = (category) => {
+    setSelectedCategory(category);
+    setSearch(''); // Clear the search box once a category is selected
+  };
+
+  const filteredCategories = categories.filter((category) =>
+    category.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -50,7 +67,7 @@ const ProductForm = ({ closeModal }) => {
         data
       );
   
-      const updatedFormData = { ...formData, image: cloudinaryResponse.data.secure_url };
+      const updatedFormData = { ...formData,category:selectedCategory, image: cloudinaryResponse.data.secure_url };
   // toast.dismiss()
       // toast.loading('Adding Product');
   
@@ -146,29 +163,44 @@ const ProductForm = ({ closeModal }) => {
       </div>
 
       <div className="mb-4">
-        <label
-          htmlFor="category"
-          className="block text-gray-700 font-medium mb-1"
-        >
-          Category
-        </label>
-        <div className="relative">
-          <select
-            id="category"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full px-4 overflow-auto py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black appearance-none"
-            
-          >
-            <option value="">Select a category</option>
-            {categories.map((x)=>{
-                   return( <option value={X.name}>{x.name}</option>)
-                })}
-          </select>
-          <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
-        </div>
+      <label htmlFor="category" className="block text-gray-700 font-medium mb-1">
+        Category
+      </label>
+      <div className="relative">
+        {/* Read-only input showing the selected category */}
+        <input
+          type="text"
+          value={selectedCategory.name || 'Select a category'}
+          readOnly
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black bg-gray-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-black"
+        />
+        {/* <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={20} /> */}
+        
+        {/* Searchable input box */}
+        <input
+          type="text"
+          value={search}
+          onChange={handleSearchChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black mt-2 focus:outline-none focus:ring-2 focus:ring-black"
+          placeholder="Search categories"
+        />
+        
+        {/* Dropdown list of matching categories */}
+        {filteredCategories.length > 0 && (
+          <ul className="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg max-h-20 overflow-auto z-10">
+            {filteredCategories.map((category) => (
+              <li
+                key={category.id}
+                className="px-4 py-2 cursor-pointer hover:bg-gray-200"
+                onClick={() => handleCategorySelect(category)}
+              >
+                {category.name}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
+    </div>
 
 
 {su &&

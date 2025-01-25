@@ -745,7 +745,7 @@ const handleSubmit = async (e) => {
         isOpen={isAddProductModalOpen}
         onRequestClose={closeAddProductModal}
         contentLabel="Add Product"
-        className="bg-white p-6 rounded-lg shadow-xl w-1/3 h-[80vh] mx-auto mt-2 outline-none"
+        className="bg-white p-6 rounded-lg shadow-xl w-full md:w-1/3 h-[80vh] mx-auto mt-2 outline-none"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
       >
         <button

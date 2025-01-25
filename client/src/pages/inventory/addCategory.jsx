@@ -102,7 +102,7 @@ const CategoryModal = () => {
 
       <div className="w-full max-w-md">
         {filteredCategories.length > 0 ? (
-          <ul className="bg-white rounded-lg shadow-md divide-y divide-gray-200 max-h-96 overflow-auto">
+          <ul className="bg-white rounded-lg shadow-md divide-y divide-gray-200 max-h-[25vh] overflow-auto">
             {filteredCategories.map((category, index) => (
               <li key={index} className="p-4 flex justify-between items-center hover:bg-gray-50">
                 <span className="text-lg font-medium">{category?.name}</span>
