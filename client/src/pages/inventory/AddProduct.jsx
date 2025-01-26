@@ -187,7 +187,7 @@ const ProductForm = ({ closeModal }) => {
         
         {/* Dropdown list of matching categories */}
         {filteredCategories.length > 0 && (
-          <ul className="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg max-h-20 overflow-auto z-10">
+          <ul className="w-full mt-1 bg-white border border-gray-300 rounded-lg max-h-20 overflow-auto z-10">
             {filteredCategories.map((category) => (
               <li
                 key={category.id}
