@@ -59,9 +59,9 @@ const Login = () => {
           </div>
           <button type="submit" className="w-full py-2 px-4 bg-blue-500 text-white rounded-md">Login</button>
         </form>
-        <p className="mt-4 text-sm text-center">
+        {/* <p className="mt-4 text-sm text-center">
           Don't have an account? <a href="/signup" className="text-blue-500">Sign Up</a>
-        </p>
+        </p> */}
       </div>
     </div>
   );

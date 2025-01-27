@@ -587,7 +587,8 @@ module.exports = {
 
         const stockInEntry = {
           quantity:stock,
-          timestamp: new Date(), // Current timestamp when the stock is added
+          timestamp: new Date(),  // Current timestamp when the stock is added
+          action:true,  //True while adding stock
         };
     
         // Create a new product instance
@@ -749,6 +750,7 @@ module.exports = {
         const stockOutEntry = {
           quantity,
           invoiceNumber,
+          action:false,  //True while adding stock
           timestamp: new Date(),
         };
         product.history.push(stockOutEntry);
@@ -788,6 +790,7 @@ module.exports = {
         const stockInEntry = {
           quantity,
           timestamp: new Date(), // Current timestamp when the stock is added
+          action:true,  //True while adding stock
         };
         product.history.push(stockInEntry);
     
