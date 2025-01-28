@@ -12,7 +12,8 @@ const ProductForm = ({ closeModal }) => {
     name: "",
     price: "",
     stock: "",
-    image: ""
+    image: "",
+    minStock:3
   });
 
   const [imageFile, setImageFile] = useState(null);
@@ -59,11 +60,11 @@ const ProductForm = ({ closeModal }) => {
     try {
       const data = new FormData();
       data.append('file', imageFile);
-      data.append('upload_preset', 'random');
-      data.append('cloud_name', 'dqrtxw295');
+      data.append('upload_preset', 'notebook');
+      data.append('cloud_name', 'dpmkspxlg');
   
       const cloudinaryResponse = await axios.post(
-        'https://api.cloudinary.com/v1_1/dqrtxw295/auto/upload',
+        'https://api.cloudinary.com/v1_1/dpmkspxlg/auto/upload',
         data
       );
   
@@ -202,6 +203,106 @@ const ProductForm = ({ closeModal }) => {
       </div>
     </div>
 
+    <div className="mb-4">
+        <label
+          htmlFor="cartoons"
+          className="block text-gray-700 font-medium mb-1"
+        >
+          cartoons
+        </label>
+        <input
+          type="number"
+          id="cartoons"
+          min={0}
+          name="cartoons"
+          value={formData.cartoons}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
+          
+        />
+      </div>
+
+      <div className="mb-4">
+        <label
+          htmlFor="storageArea"
+          className="block text-gray-700 font-medium mb-1"
+        >
+          Storage Area
+        </label>
+        <input
+          type="text"
+          id="storageArea"
+          min={0}
+          name="storageArea"
+          value={formData.storageArea}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
+          
+        />
+      </div>
+
+
+
+      <div className="mb-4">
+        <label
+          htmlFor="packingDetails"
+          className="block text-gray-700 font-medium mb-1"
+        >
+          Packing Details
+        </label>
+        <textarea
+          type="number"
+          id="packingDetails"
+          min={0}
+          name="packingDetails"
+          value={formData.packingDetails}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
+          
+        />
+      </div>
+
+      <div className="mb-4">
+        <label
+          htmlFor="dimensions"
+          className="block text-gray-700 font-medium mb-1"
+        >
+          Dimensions
+        </label>
+        <input
+          type="text"
+          id="dimensions"
+          min={0}
+          name="dimensions"
+          value={formData.dimensions}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
+          
+        />
+      </div>
+
+      <div className="mb-4">
+        <label
+          htmlFor="weight"
+          className="block text-gray-700 font-medium mb-1"
+        >
+          Weight
+        </label>
+        <input
+          type="text"
+          id="weight"
+          min={0}
+          name="weight"
+          value={formData.weight}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
+          
+        />
+      </div>
+
+
+
+
 
 {su &&
  <div className="mb-4">
@@ -254,6 +355,41 @@ const ProductForm = ({ closeModal }) => {
           id="stock"
           name="stock"
           value={formData.stock}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
+          
+        />
+      </div>
+      <div className="mb-4">
+        <label
+          htmlFor="damagedStock"
+          className="block text-gray-700 font-medium mb-1"
+        >
+          Damaged Stock
+        </label>
+        <input
+          type="number"
+          id="damagedStock"
+          name="damagedStock"
+          value={formData.damagedStock}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
+          
+        />
+      </div>
+
+      <div className="mb-4">
+        <label
+          htmlFor="minStock"
+          className="block text-gray-700 font-medium mb-1"
+        >
+          Stock Alert Quantity
+        </label>
+        <input
+          type="number"
+          id="minStock"
+          name="minStock"
+          value={formData.minStock}
           onChange={handleChange}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
           

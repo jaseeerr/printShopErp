@@ -245,7 +245,14 @@ const handleSubmit = async (e) => {
       'Category': product?.category,
       'Cost Price (AED)': isToggled ? product.costPrice : 'null',
       'Selling Price (AED)': product.price.toFixed(2),
-      'Stock': product.stock
+      'Stock': product.stock,
+      'Damaged Stock':product?.damagedStock,
+      'Cartoons':product?.cartoons,
+      'Storage Area':product?.storageArea,
+      'packingDetails':product?.packingDetails,
+      'dimensions':product?.dimensions,
+      'weight':product?.weight,
+
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(exportData);
@@ -480,70 +487,75 @@ const handleSubmit = async (e) => {
       />
     </div>
   </div>
-            <div className="p-6">
-              <a href={`/view/${product._id}`} className="block mb-2">
-                <h2 className="text-2xl font-semibold text-black hover:underline">{product.name}</h2>
-              </a>
-              <p className="text-gray-600 mb-2">Product Code: {product?.code}</p>
-              <p className="text-gray-600 mb-2">Category: {product?.category}</p>
-              {isToggled &&
-              <p className="text-gray-600 mb-2">Cost Price: AED {product?.costPrice || 0}</p>
-              }
-              <p className="text-gray-600 mb-2">Price: AED {product.price.toFixed(2)}</p>
-              <p className="text-gray-600 mb-4">Stock: {product.stock}</p>
-             
-              <div className="flex justify-between">
-                <button
-                onClick={()=>{
-                  setUpdatedProduct(product)
-                  setIsModalOpen(true)
-                }}
-                  className="flex items-center justify-center bg-gray-800 text-white py-2 px-4 rounded-lg hover:bg-black transition-colors duration-300"
-                  aria-label={`Edit ${product.name}`}
-                >
-                  <Edit size={18} className="mr-2" />
-                  Edit
-                </button>
+  <div className="p-6">
+  <a href={`/view/${product._id}`} className="block mb-4">
+    <h2 className="text-2xl font-semibold text-black hover:underline">{product.name}</h2>
+  </a>
 
-              
-              
+  <div className="grid grid-cols-2 gap-2 mb-4">
+    <p className="text-gray-600">Code: {product?.code}</p>
+    <p className="text-gray-600">Category: {product?.category}</p>
+    <p className="text-gray-600">Price: AED {product?.price.toFixed(2)}</p>
+    <p className={`${Number(product.stock) <= Number(product?.minStock) ? 'text-red-700' : 'text-green-600' }`}>Stock: {product?.stock}</p>
+    <p className="text-gray-600">Damaged Stock: {product?.damagedStock}</p>
+    <p className="text-gray-600">Cartoons: {product?.cartoons}</p>
+    <p className="text-gray-600">Area: {product?.storageArea}</p>
+    <p className="text-gray-600">Dimensions: {product?.dimensions}</p>
+    <p className="text-gray-600">Weight: {product?.weight}</p>
+   
+    {isToggled && <p className="text-gray-600 col-span-2">Cost: AED {product?.costPrice || 0}</p>}
+  </div>
+  <p className="text-gray-600">Packing Details: {product?.packingDetails}</p>
+  <div className="space-y-2">
+    <div className="grid grid-cols-2 gap-2">
+      <button
+        onClick={() => {
+          setUpdatedProduct(product)
+          setIsModalOpen(true)
+        }}
+        className="flex items-center justify-center bg-gray-800 text-white py-2 px-3 rounded-lg hover:bg-black transition-colors duration-300"
+        aria-label={`Edit ${product.name}`}
+      >
+        <Edit size={18} className="mr-2" />
+        Edit
+      </button>
 
+      <button
+        onClick={downloadQRCode}
+        className="flex items-center justify-center bg-gray-200 text-black py-2 px-3 rounded-lg hover:bg-gray-300 transition-colors duration-300"
+        aria-label={`Download QR Code for ${product.name}`}
+      >
+        <Download size={18} className="mr-2" />
+        QR Code
+      </button>
+    </div>
 
-                <button
-                onClick={downloadQRCode}
-                  className="flex items-center justify-center bg-gray-200 text-black py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-300"
-                  aria-label={`Download QR Code for ${product.name}`}
-                >
-                  <Download size={18} className="mr-2" />
-                  QR Code
-                </button>
+    <div className="grid grid-cols-2 gap-2">
+      <button
+        onClick={() => {
+          deleteProduct(product._id)
+        }}
+        className="flex items-center justify-center bg-gray-800 text-white py-2 px-3 rounded-lg hover:bg-black transition-colors duration-300"
+        aria-label={`Delete ${product.name}`}
+      >
+        <Trash size={18} className="mr-2" />
+        Delete
+      </button>
 
-                <button
-                onClick={()=>{
-                  deleteProduct(product._id)
-                }}
-                  className="flex items-center justify-center bg-gray-800 text-white py-2 px-3 rounded-lg hover:bg-black transition-colors duration-300"
-                  aria-label={`Edit ${product.name}`}
-                >
-                  <Trash size={18} className="mr-2" />
-                  Delete
-                </button>
-              </div>
-              <div className="flex justify-center mt-2">
-              <button
-      type="button"
-      onClick={()=>{
-        addToCart(product)
-      }}
-      className="px-4 py-2 bg-gray-800 w-full text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600 transition-all duration-200 ease-in-out flex items-center justify-center"
-    >
-      <ShoppingCart className="w-4 h-4 mr-2" />
-      Add to Cart
-    </button>
-              </div>
-
-
-            </div>
+      <button
+        type="button"
+        onClick={() => {
+          addToCart(product)
+        }}
+        className="flex items-center justify-center bg-gray-800 text-white py-2 px-3 rounded-lg hover:bg-gray-700 transition-colors duration-300"
+        aria-label={`Add ${product.name} to cart`}
+      >
+        <ShoppingCart size={18} className="mr-2" />
+        Add to Cart
+      </button>
+    </div>
+  </div>
+</div>
           </div>
         ))}
       </div>
@@ -653,6 +665,104 @@ const handleSubmit = async (e) => {
               <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
             </div>
           </div>
+
+          <div className="mb-4">
+        <label
+          htmlFor="cartoons"
+          className="block text-gray-700 font-medium mb-1"
+        >
+          cartoons
+        </label>
+        <input
+          type="number"
+          id="cartoons"
+          min={0}
+          name="cartoons"
+          value={updatedProduct?.cartoons}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
+          
+        />
+      </div>
+
+      
+      <div className="mb-4">
+        <label
+          htmlFor="storageArea"
+          className="block text-gray-700 font-medium mb-1"
+        >
+          Storage Area
+        </label>
+        <input
+          type="text"
+          id="storageArea"
+          min={0}
+          name="storageArea"
+          value={updatedProduct?.storageArea}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
+          
+        />
+      </div>
+
+
+
+      <div className="mb-4">
+        <label
+          htmlFor="packingDetails"
+          className="block text-gray-700 font-medium mb-1"
+        >
+          Packing Details
+        </label>
+        <textarea
+          type="number"
+          id="packingDetails"
+          min={0}
+          name="packingDetails"
+          value={updatedProduct?.packingDetails}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
+          
+        />
+      </div>
+
+      <div className="mb-4">
+        <label
+          htmlFor="dimensions"
+          className="block text-gray-700 font-medium mb-1"
+        >
+          Dimensions
+        </label>
+        <input
+          type="text"
+          id="dimensions"
+          min={0}
+          name="dimensions"
+          value={updatedProduct?.dimensions}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
+          
+        />
+      </div>
+
+      <div className="mb-4">
+        <label
+          htmlFor="weight"
+          className="block text-gray-700 font-medium mb-1"
+        >
+          Weight
+        </label>
+        <input
+          type="text"
+          id="weight"
+          min={0}
+          name="weight"
+          value={updatedProduct?.weight}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
+          
+        />
+      </div>
              {isToggled && 
               <div>
               <label htmlFor="costPrice" className="block text-sm font-medium text-gray-700 mb-1">Cost Price</label>
@@ -692,6 +802,42 @@ const handleSubmit = async (e) => {
                required
              />
            </div> */}
+
+<div className="mb-4">
+        <label
+          htmlFor="damagedStock"
+          className="block text-gray-700 font-medium mb-1"
+        >
+          Damaged Stock
+        </label>
+        <input
+          type="number"
+          id="damagedStock"
+          name="damagedStock"
+          value={updatedProduct.damagedStock}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
+          
+        />
+      </div>
+
+      <div className="mb-4">
+        <label
+          htmlFor="minStock"
+          className="block text-gray-700 font-medium mb-1"
+        >
+           Stock Alert Quantity
+        </label>
+        <input
+          type="number"
+          id="minStock"
+          name="minStock"
+          value={updatedProduct.minStock}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-black"
+          
+        />
+      </div>
  
            <div>
              <label className="block text-sm font-medium text-gray-700 mb-1">Product Image</label>

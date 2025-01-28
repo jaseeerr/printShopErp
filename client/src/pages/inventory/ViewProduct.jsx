@@ -109,54 +109,83 @@ const ViewProduct = () => {
       {product ? (
         <div>
           {/* Product Card */}
-          <div className="max-w-lg mx-auto bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 ease-in-out border border-gray-200">
-      <div className="md:flex">
-        <div className="md:shrink-0">
+          <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 ease-in-out border border-gray-200">
+      <div className="flex flex-col md:flex-row">
+        <div className="md:w-1/2 lg:w-1/3 relative">
           <img
-            src={product?.image || "https://via.placeholder.com/300"}
-            alt={product?.name}
-            className="h-48 w-full object-cover md:h-full md:w-56"
+            src={product.image || "https://via.placeholder.com/300"}
+            alt={product.name}
+            width={300}
+            height={300}
+            className="w-full h-full object-cover"
+            layout="responsive"
           />
         </div>
-        <div className="p-6">
-          <div className="uppercase tracking-wide text-sm text-gray-600 font-semibold">{product?.category}</div>
-          <h2 className="block mt-1 text-lg leading-tight font-medium text-black">{product?.name}</h2>
-          <p className="mt-2 text-gray-500">Code: {product?.code}</p>
-          <p className="mt-2 text-2xl font-bold text-gray-900">AED {product?.price.toFixed(2)}</p>
+        <div className="p-6 flex-1 flex flex-col justify-between">
+          <div>
+            <div className="uppercase tracking-wide text-sm text-gray-600 font-semibold">{product.category}</div>
+            <h2 className="text-xl font-semibold text-gray-900 mt-2">{product.name}</h2>
 
-          <div className="mt-4 flex items-center text-gray-700">
-            <PackageIcon className="h-5 w-5 mr-2" />
-            <span>{product?.stock} in stock</span>
+            <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+              <p className="text-gray-600">
+                <span className="font-medium">Code:</span> {product.code}
+              </p>
+              <p className="text-gray-600">
+                <span className="font-medium">Cartoons:</span> {product.cartoons}
+              </p>
+              <p className="text-gray-600">
+                <span className="font-medium">Area:</span> {product.storageArea}
+              </p>
+              <p className="text-gray-600">
+                <span className="font-medium">Dimensions:</span> {product.dimensions}
+              </p>
+              <p className="text-gray-600">
+                <span className="font-medium">Weight:</span> {product.weight}
+              </p>
+              <p className="text-gray-600">
+                <span className="font-medium">Damaged Stock:</span> {product.damagedStock}
+              </p>
+              <p className="text-gray-600">
+                <span className="font-medium">Stock Alert Quantity:</span> {product.minStock}
+              </p>
+            </div>
+
+            <div className="mt-4">
+              <p className="text-gray-600">
+                <span className="font-medium">Packing:</span> {product.packingDetails}
+              </p>
+            </div>
           </div>
 
-          <div className="mt-6 flex justify-between space-x-4">
+          <div className="mt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <p className="text-3xl font-bold text-gray-900">AED {product.price.toFixed(2)}</p>
+            <div className={`mt-2 sm:mt-0 flex items-center  ${Number(product.stock) <=5 ? 'text-red-700' : 'text-green-600' }`}>
+              <PackageIcon className="h-5 w-5 mr-2" />
+              <span>{product.stock} in stock</span>
+            </div>
+          </div>
+
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
             <button
               onClick={() => setModalOpen(true)}
-              className="flex-1 bg-gray-800 hover:bg-gray-900 text-white py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+              className="bg-gray-800 hover:bg-gray-900 text-white py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
             >
               Stock Out
             </button>
             <button
               onClick={() => setAddStockModalOpen(true)}
-              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50"
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50"
             >
               Add Stock
             </button>
-            
-          </div>
-
-          <div className="mt-4">
             <button
-              onClick={()=>{
-                addToCart(product)
-              }}
-              className="w-full bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 flex items-center justify-center"
+              onClick={() => addToCart(product)}
+              className="bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 flex items-center justify-center"
             >
               <ShoppingCartIcon className="h-5 w-5 mr-2" />
               Add to Cart
             </button>
           </div>
-
         </div>
       </div>
     </div>

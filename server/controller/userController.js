@@ -578,8 +578,8 @@ module.exports = {
     },
     addProduct:async(req,res)=>{
       try {
-        const { name, price, stock, image, code, category, costPrice } = req.body;
-        
+        const { name, price, stock,minStock,damagedStock, image, code, category, costPrice,cartoons,storageArea,packingDetails,dimensions,weight } = req.body;
+        console.log(req.body)
         // Make sure required fields are provided
         if (!name || !price || !stock) {
           return res.status(400).json({ message: "Name, price, and stock are required" });
@@ -595,12 +595,19 @@ module.exports = {
         const newProduct = new Product({
           name,
           code,
-          category,
+          category:category.name,
           history:[stockInEntry],
           costPrice,
           price,
           stock,
+          minStock,
+          damagedStock,
           image, // Can be the image URL or other metadata (like Cloudinary URL)
+          cartoons,
+          storageArea,
+          packingDetails,
+          dimensions,
+          weight
         });
     
         // Save the product to the database
@@ -683,12 +690,12 @@ module.exports = {
     editProduct:async(req,res)=>{
       try {
         const { id } = req.params;
-        const { name, price, stock, image,code, category, costPrice  } = req.body; // Extract updated data
+        const { name, price, stock,minStock,damagedStock, image,code, category, costPrice,cartoons,storageArea,packingDetails,dimensions,weight  } = req.body; // Extract updated data
     
         // Find the product by id and update its details
         const updatedProduct = await Product.findByIdAndUpdate(
           id,
-          { name, price, stock, image,code, category, costPrice  }, // New values to update
+          { name, price, stock,damagedStock,minStock, image,code, category, costPrice,cartoons,storageArea,packingDetails,dimensions,weight  }, // New values to update
           { new: true } // Return the updated product
         );
     
