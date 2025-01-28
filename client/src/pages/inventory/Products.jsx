@@ -502,6 +502,7 @@ const handleSubmit = async (e) => {
     <p className="text-gray-600">Area: {product?.storageArea}</p>
     <p className="text-gray-600">Dimensions: {product?.dimensions}</p>
     <p className="text-gray-600">Weight: {product?.weight}</p>
+    <p className="text-gray-600">Stock Alert Quantity: {product?.minStock}</p>
    
     {isToggled && <p className="text-gray-600 col-span-2">Cost: AED {product?.costPrice || 0}</p>}
   </div>
